@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>tbdvalidate</title>
+	<link rel="stylesheet" href="css/main.css" />
+</head>
+
+<body>
+	<h3 style="font-size:20px; text-align:center; font-weight:bold;">js验证组件： tbdvalidate</h3>
+	<br /><br />
+	<h4 style="font-size:16px; text-align:center; font-weight:bold;">demo1 必填</h4>
+	<br /><br />
+	<!--中心-->
+	<div class="content">
+		<div class="login-box">
+			<div class="wrap">
+				<div class="login-box-cen">
+					<br /><br />
+					<div class="login-box-cen-form clearfix mar-bottom20">
+						<input type="text" class="login-box-cen-form-input w218" placeholder="请输入手机号" id="login_phone" />
+						<label class="err err-top40" id="login_phone_text">手机号错误</label>
+					</div>
+					<div class="login-box-cen-form clearfix mar-bottom20">
+						<input type="text" class="login-box-cen-form-input w218" placeholder="请输入密码" id="login_password" />
+						<label class="err err-top40" id="login_password_text">请输入密码</label>
+					</div>
+					<div class="login-box-cen-form clearfix">
+						<input type="submit" value="登录" class="login-box-cen-form-button w238" id="login_submit" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br /><br />
+	<h4 style="font-size:16px; text-align:center; font-weight:bold;">demo2 必填+非必填</h4>
+	<br /><br />
+	<!--中心-->
+	<div class="content">
+		<div class="register-box">
+			<div class="wrap">
+				<div class="register-box-con2">
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian">*</em>企业名称</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358" placeholder="请输入与工商营业执照一致的公司名称，不超过20个字" id="reg_info_company" />
+							<label id="reg_info_company_text" class="err err-top40">请输入与工商营业执照一致的公司名称，不超过20个字</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>企业网址</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358" placeholder="请输入正确的网址" id="reg_info_www" />
+							<label class="err err-top40" id="reg_info_www_text">请输入正确的网址</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>企业地址</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358" placeholder="公司所在地址，不超过40个字" id="reg_info_address" />
+							<label class="err err-top40" id="reg_info_address_text">公司所在地址，不超过40个字</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>企业简介</label>
+						<div class="register-box-con2-box-right">
+							<textarea class="login-box-cen-form-textarea w358 h88" id="reg_info_textarea" placeholder="简介不超过200个字....."></textarea>
+							<label class="err err-top90" id="reg_info_textarea_text">简介不超过200个字</label>
+						</div>
+					</div>
+
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian">*</em>联系人</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358" placeholder="请输入与身份证一致的姓名，不能超过20个字" id="reg_info_name" />
+							<label class="err err-top40" id="reg_info_name_text">请输入与身份证一致的姓名，不能超过20个字</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian">*</em>Email地址</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358" placeholder="请输入有效邮箱，用于接收平台审核等重要消息通知" id="reg_info_email" />
+							<label class="err err-top40" id="reg_info_email_text">请输入有效邮箱，用于接收平台审核等重要消息通知</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian">*</em>名 片</label>
+						<div class="register-box-con2-box-right">
+							<label class="register-box-con2-box-upload">
+								<input type="file" name="file" id="reg_info_file" />
+								<div class="register-box-con2-box-upload-ti"><em id="reg_info_file_w">上传</em><img id="reg_info_file_base64"
+									 style="display:none;" /></div>
+							</label>
+							<p class="register-box-con2-box-pw">1.支持图片格式JPG/PNG，图片大小不超过2M</p>
+							<p class="register-box-con2-box-pw">2.上传名片，便于联系开发者进行审核等重要事项</p>
+							<label class="err err-top160" id="reg_info_file_text">支持图片格式JPG/PNG，图片大小不超过2M</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20 mar-top50">
+						<label class="register-box-con2-box-left"></label>
+						<div class="register-box-con2-box-right">
+							<input type="submit" value="提交申请" class="login-box-cen-form-button w380" id="reg_info_submit" />
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<br /><br />
+	<h4 style="font-size:16px; text-align:center; font-weight:bold;">demo3 必填+特殊处理</h4>
+	<br /><br />
+	<!--中心-->
+	<div class="content">
+		<div class="register-box">
+			<div class="wrap">
+				<div class="register-box-con">
+					<div class="register-box-cen-form clearfix mar-bottom20">
+						<input type="text" class="login-box-cen-form-input w358" placeholder="请输入手机号" id="reg_phone" />
+						<label class="err err-top40" id="reg_phone_text">手机号错误</label>
+					</div>
+					<div class="register-box-cen-form clearfix mar-bottom20">
+						<input type="text" class="login-box-cen-form-input w358" placeholder="设置登录密码" id="reg_password" />
+						<label class="err err-top40" id="reg_password_text">密码错误</label>
+					</div>
+					<div class="register-box-cen-form clearfix mar-bottom20">
+						<input type="text" class="login-box-cen-form-input w228" placeholder="短信验证码" id="reg_mescode" />
+						<button class="login-box-cen-form-mes w120 mar-left10" id="reg_mescode_btn" able="able">获取验证码</button>
+						<label class="err err-top40" id="reg_mescode_text">短信验证码错误</label>
+					</div>
+					<div class="register-box-cen-form clearfix mar-bottom20 mar-top50">
+						<input type="submit" value="注册" class="login-box-cen-form-button w380" id="reg_submit" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/tbdValidate.js"></script>
+	<script type="text/javascript" src="js/upload.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			//demo1
+			var regconfig = [
+				{ eleinput: "login_phone", eletext: "login_phone_text", rule: [{ reg: /^.+$/, text: "手机号不能为空" }, { reg: /^1[34578]\d{9}$/, text: "手机号格式错误" }] },
+				{ eleinput: "login_password", eletext: "login_password_text", rule: [{ reg: /^.+$/, text: "密码不能为空" }] }
+			];
+			tbdValidate(
+				regconfig,
+				{
+					elesubmit: "login_submit",//提交按钮
+					funsubmit: function () {//验证通过可提交回调				
+						//信息提交接口
+						alert("成功");
+					},
+					funerr: function () {//不可提交回调
+
+					},
+					funerrlist: function (errlist) {
+						$('#' + errlist[0]).focus();
+					}
+				}
+			);
+			//end
+			//demo2
+			var regconfig = [
+				{ eleinput: "reg_info_company", eletext: "reg_info_company_text", rule: [{ reg: /^.+$/, text: "企业名称不能为空" }, { reg: /^.{1,20}$/, text: "企业名称不超过20个字" }] },
+				{ eleinput: "reg_info_name", eletext: "reg_info_name_text", rule: [{ reg: /^.+$/, text: "联系人不能为空" }, { reg: /^.{1,20}$/, text: "联系人不超过20个字" }] },
+				{ eleinput: "reg_info_email", eletext: "reg_info_email_text", rule: [{ reg: /^.+$/, text: "Email地址不能为空" }, { reg: /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/, text: "Email地址格式错误" }] }
+			];
+			tbdValidate(
+				regconfig,
+				{
+					elesubmit: "reg_info_submit",//提交按钮
+					funsubmit: function () {//验证通过可提交回调
+						if ($("#reg_info_file_base64").attr("src")) {
+							$("#reg_info_file_text").hide();
+						} else {
+							$("#reg_info_file_text").html('请上传名片').show();
+							return false;
+						};
+						//信息提交接口
+						alert("成功");
+					},
+					funerr: function () {//不可提交回调
+						if ($("#reg_info_file_base64").attr("src")) {
+							$("#reg_info_file_text").hide();
+						} else {
+							$("#reg_info_file_text").html('请上传名片').show();
+							return false;
+						};
+					},
+					funerrlist: function (errlist) {
+						$('#' + errlist[0]).focus();
+					}
+				}
+			);
+
+			var noregconfig = [
+				{ eleinput: "reg_info_www", eletext: "reg_info_www_text", rule: [{ reg: /(^(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$)|(^$)/, text: "请输入正确的网址" }] },
+				{ eleinput: "reg_info_address", eletext: "reg_info_address_text", rule: [{ reg: /^.{0,40}$/, text: "公司所在地址，不超过40个字" }] },
+				{ eleinput: "reg_info_textarea", eletext: "reg_info_textarea_text", rule: [{ reg: /^.{0,200}$/, text: "简介不超过200个字" }] }
+			];
+			tbdnoValidate(noregconfig);
+			//end
+			//demo3
+			//获取短信验证码
+			var mesdong = null;
+			var mestime = 60;
+			$("#reg_mescode_btn").click(function () {
+				var phoneval = $.trim($("#reg_phone").val());
+				if (regconfig[0].rule[0].reg.test(phoneval)) {
+					$("#reg_phone_text").hide();
+				} else {
+					$("#reg_phone_text").html(regconfig[0].rule[0].text).show();
+					$("#reg_phone").focus();
+					return false
+				};
+				if (regconfig[0].rule[1].reg.test(phoneval)) {
+					$("#reg_phone_text").hide();
+				} else {
+					$("#reg_phone").focus();
+					$("#reg_phone_text").html(regconfig[0].rule[1].text).show();
+					return false
+				};
+				if ($(this).attr('able') == "able") {//发送
+					$(this).attr('able', "disable");
+					$(this).css('cursor', 'not-allowed');
+					$(this).html(mestime + "s");
+					mesdong = setInterval(function () {//倒计时
+						mestime -= 1;
+						if (mestime < 0) {
+							$("#reg_mescode_btn").attr('able', "able");
+							$("#reg_mescode_btn").css('cursor', 'pointer');
+							$("#reg_mescode_btn").html('获取验证码');
+							mestime = 60;
+							clearInterval(mesdong);
+						} else {
+							$("#reg_mescode_btn").html(mestime + "s");
+						};
+					}, 1000);
+					//短信发送接口
+
+				} else {
+
+				};
+			});
+			//注册 
+			var regconfig = [
+				{ eleinput: "reg_phone", eletext: "reg_phone_text", rule: [{ reg: /^.+$/, text: '手机号不能为空' }, { reg: /^1[34578]\d{9}$/, text: '手机号格式错误' }] },
+				{ eleinput: "reg_password", eletext: "reg_password_text", rule: [{ reg: /^.+$/, text: '密码不能为空' }, { reg: /^.{6,10}$/, text: '密码在6-10位之间' }] },
+				{ eleinput: "reg_mescode", eletext: "reg_mescode_text", rule: [{ reg: /^.+$/, text: '短信验证码不能为空' }, { reg: /^[0-9]{6}$/, text: '输入6位短信验证码' }] }
+			];
+			tbdValidate(
+				regconfig,
+				{
+					elesubmit: "reg_submit",//提交按钮
+					funsubmit: function () {//验证通过可提交回调	
+						//信息提交接口
+						alert("成功");
+					},
+					funerr: function () {//不可提交回调
+
+					},
+					funerrlist: function (errlist) {
+						$('#' + errlist[0]).focus();
+					}
+				}
+			);
+			//end	
+		});
+	</script>
+</body>
+
+</html>
