@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<title>TTGO</title>
 	<link rel="stylesheet" href="css/main.css" />
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js" type="text/javascript" charset="utf-8"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js" type="text/javascript" charset="utf-8"></script> -->
 </head>
 
 <body>
@@ -18,57 +18,57 @@
 			<div class="wrap">
 				<div class="register-box-con2">
 					<div class="register-box-con2-box clearfix mar-bottom20">
-						<label class="register-box-con2-box-left"><em class="bitian">*</em>企业名称</label>
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Company</label>
 						<div class="register-box-con2-box-right">
-							<input type="text" class="login-box-cen-form-input w358" placeholder="请输入与工商营业执照一致的公司名称，不超过20个字" id="reg_info_company" />
-							<label id="reg_info_company_text" class="err err-top40">请输入与工商营业执照一致的公司名称，不超过20个字</label>
+							<input type="text" class="login-box-cen-form-input w358" placeholder="Please input company name" id="reg_info_company" />
+							<label id="reg_info_company_text" class="err err-top40">Please input company name</label>
 						</div>
 					</div>
 					<div class="register-box-con2-box clearfix mar-bottom20">
-						<label class="register-box-con2-box-left"><em class="bitian"></em>企业网址</label>
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Website</label>
 						<div class="register-box-con2-box-right">
-							<input type="text" class="login-box-cen-form-input w358" placeholder="请输入正确的网址" id="reg_info_www" />
-							<label class="err err-top40" id="reg_info_www_text">请输入正确的网址</label>
+							<input type="text" class="login-box-cen-form-input w358" placeholder="Please input Website" id="reg_info_www" />
+							<label class="err err-top40" id="reg_info_www_text">Please input Website</label>
 						</div>
 					</div>
 					<div class="register-box-con2-box clearfix mar-bottom20">
-						<label class="register-box-con2-box-left"><em class="bitian"></em>企业地址</label>
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Address</label>
 						<div class="register-box-con2-box-right">
-							<input type="text" class="login-box-cen-form-input w358" placeholder="公司所在地址，不超过40个字" id="reg_info_address" />
-							<label class="err err-top40" id="reg_info_address_text">公司所在地址，不超过40个字</label>
+							<input type="text" class="login-box-cen-form-input w358" placeholder="Address" id="reg_info_address" />
+							<label class="err err-top40" id="reg_info_address_text">Please input Address</label>
 						</div>
 					</div>
 
 					<div class="register-box-con2-box clearfix mar-bottom20">
-						<label class="register-box-con2-box-left"><em class="bitian">*</em>联系人</label>
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Nmae</label>
 						<div class="register-box-con2-box-right">
-							<input type="text" class="login-box-cen-form-input w358" placeholder="请输入与身份证一致的姓名，不能超过20个字" id="reg_info_name" />
-							<label class="err err-top40" id="reg_info_name_text">请输入与身份证一致的姓名，不能超过20个字</label>
+							<input type="text" class="login-box-cen-form-input w358" placeholder="Please input Nmae" id="reg_info_name" />
+							<label class="err err-top40" id="reg_info_name_text">Please input Nmae</label>
 						</div>
 					</div>
 					<div class="register-box-con2-box clearfix mar-bottom20">
-						<label class="register-box-con2-box-left"><em class="bitian">*</em>Tel</label>
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Tel</label>
 						<div class="register-box-con2-box-right">
-							<input type="text" class="login-box-cen-form-input w358" placeholder="电话" id="login_phone" />
-							<label class="err err-top40" id="login_phone_text">电话，不能超过20个字</label>
+							<input type="text" class="login-box-cen-form-input w358" placeholder="Please input tel number" id="login_phone" />
+							<label class="err err-top40" id="login_phone_text">Please input tel number</label>
 						</div>
 					</div>
 					<div class="register-box-con2-box clearfix mar-bottom20">
-						<label class="register-box-con2-box-left"><em class="bitian">*</em>Email地址</label>
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Email</label>
 						<div class="register-box-con2-box-right">
-							<input type="text" class="login-box-cen-form-input w358" placeholder="请输入有效邮箱，用于接收平台审核等重要消息通知" id="reg_info_email" />
-							<label class="err err-top40" id="reg_info_email_text">请输入有效邮箱，用于接收平台审核等重要消息通知</label>
+							<input type="text" class="login-box-cen-form-input w358" placeholder="Please input Email" id="reg_info_email" />
+							<label class="err err-top40" id="reg_info_email_text">Please input Email</label>
 						</div>
 					</div>
 					<div class="register-box-con2-box clearfix mar-bottom20">
-						<label class="register-box-con2-box-left"><em class="bitian">*</em>名 片</label>
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Avatar</label>
 						<div class="register-box-con2-box-right">
 							<label class="register-box-con2-box-upload">
 								<input type="file" name="file" id="reg_info_file" />
-								<div class="register-box-con2-box-upload-ti"><em id="reg_info_file_w">上传</em><img id="reg_info_file_base64"
+								<div class="register-box-con2-box-upload-ti"><em id="reg_info_file_w">Upload</em><img id="reg_info_file_base64"
 									 style="display:none;" /></div>
 							</label>
-							<!-- <p class="register-box-con2-box-pw">1.支持图片格式JPG/PNG，图片大小不超过2M</p> -->
+							<p class="register-box-con2-box-pw">Support image format JPG/PNG, the image size does not exceed 2M</p>
 							<!-- <p class="register-box-con2-box-pw">2.上传名片，便于联系开发者进行审核等重要事项</p> -->
 							<label class="err err-top160" id="reg_info_file_text">支持图片格式JPG/PNG，图片大小不超过2M</label>
 						</div>
@@ -76,7 +76,7 @@
 					<div class="register-box-con2-box clearfix mar-bottom20 mar-top50">
 						<label class="register-box-con2-box-left"></label>
 						<div class="register-box-con2-box-right">
-							<input type="submit" value="提交" class="login-box-cen-form-button w380" id="reg_info_submit" />
+							<input type="submit" value="commit" class="login-box-cen-form-button w380" id="reg_info_submit" />
 						</div>
 					</div>
 
@@ -94,10 +94,10 @@
 	<script type="text/javascript">
 		//demo2
 		var regconfig = [
-			{ eleinput: "login_phone", eletext: "login_phone_text", rule: [{ reg: /^.+$/, text: "手机号不能为空" }, { reg: /^1[34578]\d{9}$/, text: "手机号格式错误" }] },
-			{ eleinput: "reg_info_company", eletext: "reg_info_company_text", rule: [{ reg: /^.+$/, text: "企业名称不能为空" }, { reg: /^.{1,20}$/, text: "企业名称不超过20个字" }] },
-			{ eleinput: "reg_info_name", eletext: "reg_info_name_text", rule: [{ reg: /^.+$/, text: "联系人不能为空" }, { reg: /^.{1,20}$/, text: "联系人不超过20个字" }] },
-			{ eleinput: "reg_info_email", eletext: "reg_info_email_text", rule: [{ reg: /^.+$/, text: "Email地址不能为空" }, { reg: /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/, text: "Email地址格式错误" }] }
+			{ eleinput: "login_phone", eletext: "login_phone_text", rule: [{ reg: /^.+$/, text: "Phone number cannot be empty" }, { reg: /^1[34578]\d{9}$/, text: "Malformed phone number" }] },
+			{ eleinput: "reg_info_company", eletext: "reg_info_company_text", rule: [{ reg: /^.+$/, text: "Business name cannot be empty" }, { reg: /^.{1,20}$/, text: "The company name does not exceed 20 words" }] },
+			{ eleinput: "reg_info_name", eletext: "reg_info_name_text", rule: [{ reg: /^.+$/, text: "Name cannot be empty" }, { reg: /^.{1,20}$/, text: "Name no more than 20 words" }] },
+			{ eleinput: "reg_info_email", eletext: "reg_info_email_text", rule: [{ reg: /^.+$/, text: "Email cannot be empty" }, { reg: /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/, text: "Email address format error" }] }
 		];
 		tbdValidate(
 			regconfig,
@@ -166,17 +166,17 @@
 
 
 				},
-				funerr: function () {//不可提交回调
-					if ($("#reg_info_file_base64").attr("src")) {
-						$("#reg_info_file_text").hide();
-					} else {
-						$("#reg_info_file_text").html('请上传名片').show();
-						return false;
-					};
-				},
-				funerrlist: function (errlist) {
-					$('#' + errlist[0]).focus();
-				}
+				// funerr: function () {//不可提交回调
+				// 	if ($("#reg_info_file_base64").attr("src")) {
+				// 		$("#reg_info_file_text").hide();
+				// 	} else {
+				// 		$("#reg_info_file_text").html('请上传名片').show();
+				// 		return false;
+				// 	};
+				// },
+				// funerrlist: function (errlist) {
+				// 	$('#' + errlist[0]).focus();
+				// }
 			}
 		);
 
