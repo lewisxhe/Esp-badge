@@ -34,8 +34,8 @@
 
 //#define DEFALUT_FONT  FreeMono9pt7b
 // #define DEFALUT_FONT  FreeMonoBoldOblique9pt7b
-#define DEFALUT_FONT FreeMonoBold9pt7b
-// #define DEFALUT_FONT FreeMonoOblique9pt7b
+// #define DEFALUT_FONT FreeMonoBold9pt7b
+#define DEFALUT_FONT FreeMonoOblique9pt7b
 // #define DEFALUT_FONT FreeSans9pt7b
 // #define DEFALUT_FONT FreeSansBold9pt7b
 // #define DEFALUT_FONT FreeSansBoldOblique9pt7b
@@ -69,6 +69,8 @@ const GFXfont *fonts[] = {
 #include <OneButton.h>
 
 #include "sleep.h"
+// ----------->>>> SD
+// #define USE_SD
 
 #ifdef USE_SD
 /*
@@ -86,6 +88,7 @@ const GFXfont *fonts[] = {
 #include "SD.h"
 #include "SPI.h"
 #define FILESYSTEM SD
+SPIClass sdSPI(VSPI);
 #else
 #include <SPIFFS.h>
 #define FILESYSTEM SPIFFS
@@ -96,13 +99,14 @@ const GFXfont *fonts[] = {
 
 #include "Esp.h"
 
+/*100 * 100 bmp fromat*/
+//https://www.onlineconverter.com/jpg-to-bmp
 #define BADGE_CONFIG_FILE_NAME "/badge.data"
-#define DEFAULT_PIC_NAME "/person.jpg"
-
+#define DEFALUT_AVATAR_BMP "/avatar.bmp"
+#define DEFALUT_QR_CODE_BMP "/qr.bmp"
 typedef struct
 {
   char name[32];
-  char picture[32];
   char link[64];
   char tel[64];
   char company[64];
@@ -133,7 +137,7 @@ static const uint16_t max_palette_pixels = 256;       // for depth <= 8
 uint8_t mono_palette_buffer[max_palette_pixels / 8];  // palette buffer for depth <= 8 b/w
 uint8_t color_palette_buffer[max_palette_pixels / 8]; // palette buffer for depth <= 8 c/w
 uint8_t input_buffer[3 * input_buffer_pixels];        // up to depth 24
-
+const char *path[2] = {DEFALUT_AVATAR_BMP, DEFALUT_QR_CODE_BMP};
 static TimerHandle_t pTimer;
 
 RTC_DATA_ATTR int wakeupCount = 0;
@@ -165,22 +169,16 @@ void displayText(const String &str, int16_t y, uint8_t alignment)
 
 void updateWindows(void)
 {
+  displayInit();
   display.fillScreen(GxEPD_WHITE);
-
   /*100 * 100 bmp fromat*/
   //https://www.onlineconverter.com/jpg-to-bmp
-  drawBitmapFromSD("/TIM.bmp", 10, 10, true);
-
+  drawBitmapFrom_SD_ToBuffer(DEFALUT_AVATAR_BMP, 10, 10, true);
   displayText(String(info.name), 30, RIGHT_ALIGNMENT);
-
   displayText(String(info.company), 50, RIGHT_ALIGNMENT);
-
   displayText(String(info.address), 70, RIGHT_ALIGNMENT);
-
   displayText(String(info.email), 90, RIGHT_ALIGNMENT);
-
   displayText(String(info.tel), 110, RIGHT_ALIGNMENT);
-
   display.update();
 }
 
@@ -202,7 +200,6 @@ void saveBadgeInfo(Badge_Info_t *info)
   root["address"] = info->address;
   root["email"] = info->email;
   root["link"] = info->link;
-  root["picture"] = info->picture;
   root["tel"] = info->tel;
 
   // Serialize JSON to file
@@ -213,6 +210,17 @@ void saveBadgeInfo(Badge_Info_t *info)
 
   // Close the file (File's destructor doesn't close the file)
   file.close();
+}
+
+void loadDefaultInfo(void)
+{
+  strlcpy(info.company, "Xin Yuan Electronic", sizeof(info.company));
+  strlcpy(info.name, "Lilygo", sizeof(info.name));
+  strlcpy(info.address, "ShenZhen", sizeof(info.address));
+  strlcpy(info.email, "lily@lilygo.cc", sizeof(info.email));
+  strlcpy(info.link, "http://www.lilygo.cn", sizeof(info.link));
+  strlcpy(info.tel, "0755-83380665", sizeof(info.tel));
+  saveBadgeInfo(&info);
 }
 
 bool loadBadgeInfo(Badge_Info_t *info)
@@ -237,25 +245,10 @@ bool loadBadgeInfo(Badge_Info_t *info)
   strlcpy(info->address, root["address"], sizeof(info->address));
   strlcpy(info->email, root["email"], sizeof(info->email));
   strlcpy(info->link, root["link"], sizeof(info->link));
-  strlcpy(info->picture, root["picture"], sizeof(info->picture));
   strlcpy(info->tel, root["tel"], sizeof(info->tel));
 
   file.close();
   return true;
-}
-
-bool createFile(uint8_t *data, size_t len)
-{
-  FILESYSTEM.remove(DEFAULT_PIC_NAME);
-  File file = FILESYSTEM.open(DEFAULT_PIC_NAME, FILE_WRITE);
-  if (!file)
-  {
-    Serial.println("Open FAIL");
-    return false;
-  }
-  size_t size = file.write(data, len);
-  file.close();
-  return size == len;
 }
 
 /**
@@ -303,9 +296,22 @@ void WebServerStart(void)
 
   server.serveStatic("/", FILESYSTEM, "/").setDefaultFile("index.html");
 
-  server.on("js/upload.js", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(FILESYSTEM, "js/upload.js", "application/javascript");
+  /*test png bmp*/
+  server.on("/av", HTTP_GET, [](AsyncWebServerRequest *request) {
+    Serial.println("BMP");
+    request->send(FILESYSTEM, DEFALUT_AVATAR_BMP, "image/bmp");
   });
+
+  server.on("/qr", HTTP_GET, [](AsyncWebServerRequest *request) {
+    Serial.println("png");
+    request->send(FILESYSTEM, DEFALUT_QR_CODE_BMP, "image/bmp");
+  });
+  /*test png bmp*/
+
+  // server.on("js/upload.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+  //   request->send(FILESYSTEM, "js/upload.js", "application/javascript");
+  // });
+
   server.on("css/main.css", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(FILESYSTEM, "css/main.css", "text/css");
   });
@@ -343,32 +349,41 @@ void WebServerStart(void)
       {
         strlcpy(info.link, params.c_str(), sizeof(info.link));
       }
-      else if (name == "picture")
-      {
-        strlcpy(info.picture, params.c_str(), sizeof(info.picture));
-      }
       else if (name == "tel")
       {
         strlcpy(info.tel, params.c_str(), sizeof(info.tel));
       }
     }
     saveBadgeInfo(&info);
-    // updateWindows();
   });
 
   server.onFileUpload([](AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
+    static File file;
+    static int pathIndex = 0;
     if (!index)
     {
-      Serial.println("free heap:" + String(ESP.getFreeHeap()));
       Serial.printf("UploadStart: %s\n", filename.c_str());
+      file = FILESYSTEM.open(path[pathIndex], FILE_WRITE);
+      if (!file)
+      {
+        Serial.println("Open FAIL");
+      }
     }
+    if (file.write(data, len) != len)
+    {
+      Serial.println("Write fail");
+    }
+
     if (final)
     {
       Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index + len);
-      Serial.println("free heap:" + String(ESP.getFreeHeap()));
-      bool ret = createFile(data, index + len);
-      Serial.printf("ret = %d\n", ret);
-      updateWindows();
+      file.close();
+      request->send(200, "text/plain", "");
+      if (++pathIndex >= 2)
+      {
+        pathIndex = 0;
+        updateWindows();
+      }
     }
   });
 
@@ -379,6 +394,29 @@ void WebServerStart(void)
   MDNS.addService("http", "tcp", 80);
 
   server.begin();
+}
+
+void showMianPage(void)
+{
+  displayInit();
+  display.fillScreen(GxEPD_WHITE);
+  drawBitmapFrom_SD_ToBuffer(DEFALUT_AVATAR_BMP, 10, 10, true);
+  displayText(String(info.name), 30, RIGHT_ALIGNMENT);
+  displayText(String(info.company), 50, RIGHT_ALIGNMENT);
+  displayText(String(info.email), 70, RIGHT_ALIGNMENT);
+  displayText(String(info.link), 90, RIGHT_ALIGNMENT);
+  display.update();
+}
+
+void showQrPage(void)
+{
+  displayInit();
+  display.fillScreen(GxEPD_WHITE);
+  drawBitmapFrom_SD_ToBuffer(DEFALUT_QR_CODE_BMP, 10, 10, true);
+  displayText(String(info.tel), 70, RIGHT_ALIGNMENT);
+  displayText(String(info.email), 90, RIGHT_ALIGNMENT);
+  displayText(String(info.address), 110, RIGHT_ALIGNMENT);
+  display.update();
 }
 
 void click1()
@@ -393,18 +431,33 @@ void click1()
 
 void click2()
 {
+  static int i = 0;
   Serial.println("Button 2 click.");
+  Serial.printf("Show Num: %d font\n", i);
+  i = ((i + 1) >= sizeof(fonts) / sizeof(fonts[0])) ? 0 : i + 1;
+  display.setFont(fonts[i]);
+  updateWindows();
 }
 
 void click3()
 {
+  static bool index = 0;
   Serial.println("Button 3 click.");
+  if (!index)
+  {
+    showMianPage();
+    index = true;
+  }
+  else
+  {
+    showQrPage();
+    index = false;
+  }
 }
 
 void pTimerOutCallback(TimerHandle_t xTimer)
 {
   configASSERT(xTimer);
-
   if (0)
   {
     Serial.println("Server is not connect,go to sleep");
@@ -481,7 +534,6 @@ uint16_t read16(File &f)
   uint16_t result;
   ((uint8_t *)&result)[0] = f.read(); // LSB
   ((uint8_t *)&result)[1] = f.read(); // MSB
-  Serial.println(result, HEX);
   return result;
 }
 
@@ -679,10 +731,21 @@ void drawBitmapFrom_SD_ToBuffer(const char *filename, int16_t x, int16_t y, bool
   }
 }
 
-void drawBitmapFromSD(const char *filename, int16_t x, int16_t y, bool with_color)
+void displayInit(void)
 {
-  drawBitmapFrom_SD_ToBuffer(filename, x, y, with_color);
-  // display.update();
+  static bool isInit = false;
+  if (isInit)
+  {
+    return;
+  }
+  isInit = true;
+  display.init();
+  display.setRotation(1);
+  display.eraseDisplay();
+  display.setTextColor(GxEPD_BLACK);
+  display.setFont(&DEFALUT_FONT);
+  display.setTextSize(0);
+  display.fillScreen(GxEPD_WHITE);
 }
 
 /**
@@ -697,7 +760,12 @@ void setup()
 
   Serial.println("free heap:" + String(ESP.getHeapSize()));
 
+#ifdef USE_SD
+  sdSPI.begin(14, 2, 15, 13);
+  if (!FILESYSTEM.begin(13, sdSPI))
+#else
   if (!FILESYSTEM.begin())
+#endif
   {
     Serial.println("FILESYSTEM is not database");
     Serial.println("Please use Arduino ESP32 Sketch data Upload files");
@@ -711,7 +779,14 @@ void setup()
   uint64_t cardSize = FILESYSTEM.cardSize() / (1024 * 1024);
   Serial.printf("SD Card Size: %lluMB\n", cardSize);
 #endif
-  listDir(FILESYSTEM, "/", 2);
+
+  // listDir(FILESYSTEM, "/", 2);
+
+  if(!loadBadgeInfo(&info))
+  {
+    loadDefaultInfo();
+  }
+
   if (print_wakeup_reason() == ESP_SLEEP_WAKEUP_EXT0)
   {
     // 唤醒将启动web server
@@ -725,43 +800,28 @@ void setup()
 
     printFile(BADGE_CONFIG_FILE_NAME);
 
-    // 初始化初始默认界面
-    display.init();
-    display.setRotation(1);
-    display.eraseDisplay();
-    display.setTextColor(GxEPD_BLACK);
-    display.setFont(&DEFALUT_FONT);
-    display.setTextSize(0);
-    display.fillScreen(GxEPD_WHITE);
-
-    if (loadBadgeInfo(&info))
-    {
-      updateWindows();
-    }
-    else
-    {
-    }
-
-    // 初始化webserver and wifi ap mode
-    WebServerStart();
+    updateWindows();
 
     // 初始化定时器
-    if (!(pTimer = xTimerCreate("timer1",
-                                60000 / portTICK_PERIOD_MS,
-                                pdTRUE,
-                                NULL,
-                                pTimerOutCallback)))
-    {
-      Serial.println("Start Timer FAIL");
-      esp_restart();
-    }
+    // if (!(pTimer = xTimerCreate("timer1",
+    //                             60000 / portTICK_PERIOD_MS,
+    //                             pdTRUE,
+    //                             NULL,
+    //                             pTimerOutCallback)))
+    // {
+    //   Serial.println("Start Timer FAIL");
+    //   esp_restart();
+    // }
 
-    if (xTimerStart(pTimer, 0) == pdFALSE)
-    {
-      Serial.println("Start Timer FAIL");
-      esp_restart();
-    }
+    // if (xTimerStart(pTimer, 0) == pdFALSE)
+    // {
+    //   Serial.println("Start Timer FAIL");
+    //   esp_restart();
+    // }
   }
+
+  // 初始化webserver and wifi ap mode
+  WebServerStart();
 
   button1.attachClick(click1);
   button2.attachClick(click2);
@@ -770,7 +830,6 @@ void setup()
 
 void loop()
 {
-  //do nothing
   button1.tick();
   button2.tick();
   button3.tick();

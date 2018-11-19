@@ -5,14 +5,11 @@
 	<meta charset="utf-8">
 	<title>TTGO</title>
 	<link rel="stylesheet" href="css/main.css" />
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js" type="text/javascript" charset="utf-8"></script> -->
 </head>
 
 <body>
 	<br /><br />
 	<br /><br />
-	<br /><br />
-	<!--中心-->
 	<div class="content">
 		<div class="register-box">
 			<div class="wrap">
@@ -60,19 +57,38 @@
 							<label class="err err-top40" id="reg_info_email_text">Please input Email</label>
 						</div>
 					</div>
+
+					<!--Avatar  -->
 					<div class="register-box-con2-box clearfix mar-bottom20">
 						<label class="register-box-con2-box-left"><em class="bitian"></em>Avatar</label>
 						<div class="register-box-con2-box-right">
 							<label class="register-box-con2-box-upload">
-								<input type="file" name="file" id="reg_info_file" />
-								<div class="register-box-con2-box-upload-ti"><em id="reg_info_file_w">Upload</em><img id="reg_info_file_base64"
-									 style="display:none;" /></div>
+								<input type="file" name="file" id="reg_info_file" onchange="showPicture(this)" />
+								<div class="register-box-con2-box-upload-ti">
+									<em id="reg_info_file_w">Upload</em>
+									<img id="reg_info_file_base64" style="display:none;" />
+								</div>
 							</label>
-							<p class="register-box-con2-box-pw">Support image format JPG/PNG, the image size does not exceed 2M</p>
-							<!-- <p class="register-box-con2-box-pw">2.上传名片，便于联系开发者进行审核等重要事项</p> -->
 							<label class="err err-top160" id="reg_info_file_text">支持图片格式JPG/PNG，图片大小不超过2M</label>
 						</div>
 					</div>
+
+					<!-- QR -->
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>QR</label>
+						<div class="register-box-con2-box-right">
+							<label class="register-box-con2-box-upload">
+								<input type="file" name="file" id="qr_info_file" onchange="showPicture(this)" />
+								<div class="register-box-con2-box-upload-ti">
+									<em id="qr_info_file_w">Upload</em>
+									<img id="qr_info_file_base64" style="display:none;" />
+								</div>
+							</label>
+							<p class="register-box-con2-box-pw">Support image format JPG/PNG, the image size does not exceed 2M</p>
+							<label class="err err-top160" id="reg_info_file_text">支持图片格式JPG/PNG，图片大小不超过2M</label>
+						</div>
+					</div>
+
 					<div class="register-box-con2-box clearfix mar-bottom20 mar-top50">
 						<label class="register-box-con2-box-left"></label>
 						<div class="register-box-con2-box-right">
@@ -90,9 +106,8 @@
 	<br /><br />
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/tbdValidate.js"></script>
-	<script type="text/javascript" src="js/upload.js"></script>
+	<!-- <script type="text/javascript" src="js/upload.js"></script> -->
 	<script type="text/javascript">
-		//demo2
 		var regconfig = [
 			{ eleinput: "login_phone", eletext: "login_phone_text", rule: [{ reg: /^.+$/, text: "Phone number cannot be empty" }, { reg: /^1[34578]\d{9}$/, text: "Malformed phone number" }] },
 			{ eleinput: "reg_info_company", eletext: "reg_info_company_text", rule: [{ reg: /^.+$/, text: "Business name cannot be empty" }, { reg: /^.{1,20}$/, text: "The company name does not exceed 20 words" }] },
@@ -102,16 +117,14 @@
 		tbdValidate(
 			regconfig,
 			{
-				elesubmit: "reg_info_submit",//提交按钮
-				funsubmit: function () {//验证通过可提交回调
+				elesubmit: "reg_info_submit",
+				funsubmit: function () {
 					if ($("#reg_info_file_base64").attr("src")) {
 						$("#reg_info_file_text").hide();
 					} else {
 						$("#reg_info_file_text").html('请上传名片').show();
 						return false;
 					};
-					//信息提交接口
-					alert("成功");
 					var company = document.getElementById("reg_info_company");
 					var name = document.getElementById("reg_info_name");
 					var address = document.getElementById("reg_info_address");
@@ -132,18 +145,12 @@
 						"link": link.value,
 						"tel": tel.value
 					});
-
-					var uploading = false;
-
+					var formData = new FormData();
 					var reg_info_file = document.getElementById("reg_info_file");
 					var file = reg_info_file.files[0];
-	
-					console.log("name:" + file.name);
-					console.log("size:" + file.size);
-					console.log("type:" + file.type);
-
-					var formData = new FormData();
-					formData.append("data", reg_info_file.files[0]);
+					var qr_info_file = document.getElementById("qr_info_file");
+					formData.append("data0", reg_info_file.files[0]);
+					formData.append("data1", qr_info_file.files[0]);
 
 					$.ajax({
 						url: "/",
@@ -154,29 +161,14 @@
 						contentType: false,
 						dataType: file.type,
 						beforeSend: function () {
-							uploading = true;
-							console.log("success start");
+							console.log("upload start");
 						},
 						success: function (data) {
 							console.log("success upload");
-							uploading = false;
 						}
 					});
-
-
-
+					alert("成功");
 				},
-				// funerr: function () {//不可提交回调
-				// 	if ($("#reg_info_file_base64").attr("src")) {
-				// 		$("#reg_info_file_text").hide();
-				// 	} else {
-				// 		$("#reg_info_file_text").html('请上传名片').show();
-				// 		return false;
-				// 	};
-				// },
-				// funerrlist: function (errlist) {
-				// 	$('#' + errlist[0]).focus();
-				// }
 			}
 		);
 
@@ -185,9 +177,92 @@
 			{ eleinput: "reg_info_address", eletext: "reg_info_address_text", rule: [{ reg: /^.{0,40}$/, text: "公司所在地址，不超过40个字" }] },
 		];
 		tbdnoValidate(noregconfig);
-			//end
+		//end
 
+		//bmp and qr code uplaod
+		function showPicture(obj) {
 
+			var reg_info_file = document.getElementById("reg_info_file");
+			var file = reg_info_file.files[0];
+
+			var f = obj.files[0];
+			if (/bmp/.test(f.type)) {
+				console.log(f);
+				$("reg_info_file_text").hide();
+			} else {
+				$("#reg_info_file_text").html('支持图片格式JPG/PNG').show();
+				alert("error ");
+				return false;
+			}
+			if (f.size >= 50 * 1024) {
+				$("#reg_info_file_text").html('图片大小不超过50k').show();
+				return false;
+			}
+			var baseID = "";
+			var hideID = "";
+			if (obj.id == "qr_info_file") {
+				baseID = "#qr_info_file_base64";
+				hideID = "#qr_info_file_w";
+			}
+			else if (obj.id == "reg_info_file") {
+				baseID = "#reg_info_file_base64";
+				hideID = "#reg_info_file_w"
+			}
+			else {
+				console.log("error id");
+			}
+			var fr = new FileReader();
+			fr.readAsDataURL(f);
+			$(baseID).removeAttr("width");
+			$(baseID).removeAttr("height");
+			fr.onloadend = function (e) {
+				$(hideID).hide();
+				$(baseID).show();
+				$(baseID).attr("src", e.target.result);
+				$(baseID)[0].onload = function () {
+					var upimgw = $(baseID).width();
+					var upimgh = $(baseID).height();
+					$(baseID).attr("width", imgPercentScale(165, 98, upimgw, upimgh).w);
+					$(baseID).attr("height", imgPercentScale(165, 98, upimgw, upimgh).h);
+				};
+			};
+		};
+
+		function imgPercentScale(boxw, boxh, imgw, imgh) {
+			var res = {};
+			var wper = imgw / boxw;
+			var hper = imgh / boxh;
+			if (wper <= 1 && hper < 1) {
+				res.w = imgw;
+				res.h = imgh;
+				return res;
+			};
+			if (wper > 1 && hper < 1) {
+				res.w = boxw;
+				var rhper = boxw / imgw;
+				res.h = imgh * rhper;
+				return res;
+			};
+			if (wper <= 1 && hper > 1) {
+				res.h = boxh;
+				var rwper = boxh / imgh;
+				res.w = imgw * rwper;
+				return res;
+			};
+			if (wper > 1 && hper > 1) {
+				if (wper >= hper) {
+					res.w = boxw;
+					var rhper = boxw / imgw;
+					res.h = imgh * rhper;
+					return res;
+				} else {
+					res.h = boxh;
+					var rwper = boxh / imgh;
+					res.w = imgw * rwper;
+					return res;
+				};
+			};
+		};
 	</script>
 </body>
 
