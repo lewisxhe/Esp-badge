@@ -32,8 +32,6 @@ input:focus,textarea:focus{box-shadow:0 0 3px 1px rgba(32, 127, 179, 0.4);outlin
 .mar-bottom10{ margin-bottom:10px;}
 /*注册*/
 .register-box-step{ height:30px; margin:0px auto; width:382px; padding:40px 0;}
-.register-box-step span{ float:left; line-height:26px; height:30px; width:30px; text-align:center;color:#207fb3; font-size:16px;background: url(../images/register_02.png) center top no-repeat;}
-.register-box-step span.step-active{ color:#fff;background: url(../images/register_01.png) center top no-repeat;}
 .register-box-step em{ float:left; width:130px; background:#207fb3; margin-top:13px; height:2px;}
 .register-box-step-first{ margin-left:16px;}
 .register-box-con{ width:380px; padding: 0 310px; background:#fff; padding-bottom:180px;}
@@ -59,7 +57,7 @@ input:focus,textarea:focus{box-shadow:0 0 3px 1px rgba(32, 127, 179, 0.4);outlin
 .register-box-con2-box-upload input{ position:absolute; left:0px; top:0px;width:165px;z-index:99; opacity:0;filter:alpha(opacity=0);}
 .register-box-con2-box-pw{ height:25px; line-height:25px; font-size:14px; color:#222222; float:left; width:380px;}
 
-.register-box-con-good{ padding:20px 0 410px;color:#222222l}
+.register-box-con-good{ padding:20px 0 410px;color:#222222}
 .register-box-con-good img{ display:block; margin:0 auto;}
 .register-box-con-good-p1{ font-size:18px;padding:40px 0 20px; text-align:center; line-height:20px;font-weight:500;}
 .register-box-con-good-p2{ font-size:14px;text-align:center; line-height:26px;}

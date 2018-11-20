@@ -35,8 +35,8 @@
 //#define DEFALUT_FONT  FreeMono9pt7b
 // #define DEFALUT_FONT  FreeMonoBoldOblique9pt7b
 // #define DEFALUT_FONT FreeMonoBold9pt7b
-#define DEFALUT_FONT FreeMonoOblique9pt7b
-// #define DEFALUT_FONT FreeSans9pt7b
+// #define DEFALUT_FONT FreeMonoOblique9pt7b
+#define DEFALUT_FONT FreeSans9pt7b
 // #define DEFALUT_FONT FreeSansBold9pt7b
 // #define DEFALUT_FONT FreeSansBoldOblique9pt7b
 // #define DEFALUT_FONT FreeSansOblique9pt7b
@@ -68,9 +68,10 @@ const GFXfont *fonts[] = {
 
 #include <OneButton.h>
 
-#include "sleep.h"
 // ----------->>>> SD
 // #define USE_SD
+// #define USE_AP_MODE
+
 
 #ifdef USE_SD
 /*
@@ -97,13 +98,18 @@ SPIClass sdSPI(VSPI);
 
 #include <ArduinoJson.h>
 
+#include "esp_wifi.h"
 #include "Esp.h"
+
 
 /*100 * 100 bmp fromat*/
 //https://www.onlineconverter.com/jpg-to-bmp
 #define BADGE_CONFIG_FILE_NAME "/badge.data"
 #define DEFALUT_AVATAR_BMP "/avatar.bmp"
 #define DEFALUT_QR_CODE_BMP "/qr.bmp"
+#define WIFI_SSID "xinyuan"
+#define WIFI_PASSWORD "12345678"
+
 typedef struct
 {
   char name[32];
@@ -138,9 +144,6 @@ uint8_t mono_palette_buffer[max_palette_pixels / 8];  // palette buffer for dept
 uint8_t color_palette_buffer[max_palette_pixels / 8]; // palette buffer for depth <= 8 c/w
 uint8_t input_buffer[3 * input_buffer_pixels];        // up to depth 24
 const char *path[2] = {DEFALUT_AVATAR_BMP, DEFALUT_QR_CODE_BMP};
-static TimerHandle_t pTimer;
-
-RTC_DATA_ATTR int wakeupCount = 0;
 
 void displayText(const String &str, int16_t y, uint8_t alignment)
 {
@@ -165,21 +168,6 @@ void displayText(const String &str, int16_t y, uint8_t alignment)
     break;
   }
   display.println(str);
-}
-
-void updateWindows(void)
-{
-  displayInit();
-  display.fillScreen(GxEPD_WHITE);
-  /*100 * 100 bmp fromat*/
-  //https://www.onlineconverter.com/jpg-to-bmp
-  drawBitmapFrom_SD_ToBuffer(DEFALUT_AVATAR_BMP, 10, 10, true);
-  displayText(String(info.name), 30, RIGHT_ALIGNMENT);
-  displayText(String(info.company), 50, RIGHT_ALIGNMENT);
-  displayText(String(info.address), 70, RIGHT_ALIGNMENT);
-  displayText(String(info.email), 90, RIGHT_ALIGNMENT);
-  displayText(String(info.tel), 110, RIGHT_ALIGNMENT);
-  display.update();
 }
 
 void saveBadgeInfo(Badge_Info_t *info)
@@ -232,6 +220,10 @@ bool loadBadgeInfo(Badge_Info_t *info)
   }
 
   File file = FILESYSTEM.open(BADGE_CONFIG_FILE_NAME);
+  if(!file){
+    Serial.println("Open Fial -->");
+    return false;
+  }
   JsonObject &root = jsonBuffer.parseObject(file);
   if (!root.success())
   {
@@ -239,6 +231,8 @@ bool loadBadgeInfo(Badge_Info_t *info)
     file.close();
     return false;
   }
+
+  root.printTo(Serial);
 
   strlcpy(info->company, root["company"], sizeof(info->company));
   strlcpy(info->name, root["name"], sizeof(info->name));
@@ -259,12 +253,20 @@ bool loadBadgeInfo(Badge_Info_t *info)
 void WebServerStart(void)
 {
 
-#if 0
+#ifdef USE_AP_MODE
+  uint8_t mac[6];
+  char apName[18] = { 0 };
   IPAddress apIP = IPAddress(192, 168, 1, 1);
 
   WiFi.mode(WIFI_AP);
+
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  if (!WiFi.softAP("TTGO-Badge", "12345678", 1, 0, 1))
+
+  esp_wifi_get_mac(WIFI_IF_STA,mac);
+
+  sprintf(apName, "TTGO-Badge-%02X:%02X", mac[4], mac[5]);
+
+  if (!WiFi.softAP(apName, "12345678", 1, 0, 1))
   {
     Serial.println("AP Config failed.");
     return;
@@ -277,12 +279,12 @@ void WebServerStart(void)
   }
 #else
   WiFi.mode(WIFI_STA);
-  WiFi.begin("xinyuan", "12345678");
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   while (WiFi.waitForConnectResult() != WL_CONNECTED)
   {
     Serial.print(".");
-    delay(1000);
+    esp_restart();
   }
   Serial.println(F("WiFi connected"));
   Serial.println("");
@@ -367,11 +369,16 @@ void WebServerStart(void)
       if (!file)
       {
         Serial.println("Open FAIL");
+        request->send(500, "text/plain", "hander error");
+        return;
       }
     }
     if (file.write(data, len) != len)
     {
       Serial.println("Write fail");
+      request->send(500, "text/plain", "hander error");
+      file.close();
+      return;
     }
 
     if (final)
@@ -382,7 +389,7 @@ void WebServerStart(void)
       if (++pathIndex >= 2)
       {
         pathIndex = 0;
-        updateWindows();
+        showMianPage();
       }
     }
   });
@@ -400,7 +407,7 @@ void showMianPage(void)
 {
   displayInit();
   display.fillScreen(GxEPD_WHITE);
-  drawBitmapFrom_SD_ToBuffer(DEFALUT_AVATAR_BMP, 10, 10, true);
+  drawBitmap(DEFALUT_AVATAR_BMP, 10, 10, true);
   displayText(String(info.name), 30, RIGHT_ALIGNMENT);
   displayText(String(info.company), 50, RIGHT_ALIGNMENT);
   displayText(String(info.email), 70, RIGHT_ALIGNMENT);
@@ -412,10 +419,10 @@ void showQrPage(void)
 {
   displayInit();
   display.fillScreen(GxEPD_WHITE);
-  drawBitmapFrom_SD_ToBuffer(DEFALUT_QR_CODE_BMP, 10, 10, true);
-  displayText(String(info.tel), 70, RIGHT_ALIGNMENT);
-  displayText(String(info.email), 90, RIGHT_ALIGNMENT);
-  displayText(String(info.address), 110, RIGHT_ALIGNMENT);
+  drawBitmap(DEFALUT_QR_CODE_BMP, 10, 10, true);
+  displayText(String(info.tel), 50, RIGHT_ALIGNMENT);
+  displayText(String(info.email), 70, RIGHT_ALIGNMENT);
+  displayText(String(info.address), 90, RIGHT_ALIGNMENT);
   display.update();
 }
 
@@ -436,12 +443,12 @@ void click2()
   Serial.printf("Show Num: %d font\n", i);
   i = ((i + 1) >= sizeof(fonts) / sizeof(fonts[0])) ? 0 : i + 1;
   display.setFont(fonts[i]);
-  updateWindows();
+  showMianPage();
 }
 
 void click3()
 {
-  static bool index = 0;
+  static bool index = 1;
   Serial.println("Button 3 click.");
   if (!index)
   {
@@ -452,79 +459,6 @@ void click3()
   {
     showQrPage();
     index = false;
-  }
-}
-
-void pTimerOutCallback(TimerHandle_t xTimer)
-{
-  configASSERT(xTimer);
-  if (0)
-  {
-    Serial.println("Server is not connect,go to sleep");
-  }
-  else
-  {
-    Serial.println("Server is connect");
-  }
-  xTimerDelete(xTimer, 0);
-}
-
-// Prints the content of a file to the Serial
-void printFile(const char *filename)
-{
-  // Open file for reading
-  File file = FILESYSTEM.open(filename);
-  if (!file)
-  {
-    Serial.println(F("Failed to read file"));
-    return;
-  }
-  // Extract each characters by one by one
-  while (file.available())
-  {
-    Serial.print((char)file.read());
-  }
-  Serial.println();
-  // Close the file (File's destructor doesn't close the file)
-  file.close();
-}
-
-void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
-{
-  Serial.printf("Listing directory: %s\r\n", dirname);
-
-  File root = fs.open(dirname);
-  if (!root)
-  {
-    Serial.println("- failed to open directory");
-    return;
-  }
-  if (!root.isDirectory())
-  {
-    Serial.println(" - not a directory");
-    return;
-  }
-
-  File file = root.openNextFile();
-  while (file)
-  {
-    if (file.isDirectory())
-    {
-      Serial.print("  DIR : ");
-      Serial.println(file.name());
-      if (levels)
-      {
-        listDir(fs, file.name(), levels - 1);
-      }
-    }
-    else
-    {
-      Serial.print("  FILE: ");
-      Serial.print(file.name());
-      Serial.print("\tSIZE: ");
-      Serial.println(file.size());
-    }
-    file = root.openNextFile();
   }
 }
 
@@ -548,7 +482,7 @@ uint32_t read32(File &f)
   return result;
 }
 
-void drawBitmapFrom_SD_ToBuffer(const char *filename, int16_t x, int16_t y, bool with_color)
+void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
 {
   File file;
   bool valid = false; // valid format to be handled
@@ -745,7 +679,6 @@ void displayInit(void)
   display.setTextColor(GxEPD_BLACK);
   display.setFont(&DEFALUT_FONT);
   display.setTextSize(0);
-  display.fillScreen(GxEPD_WHITE);
 }
 
 /**
@@ -780,47 +713,16 @@ void setup()
   Serial.printf("SD Card Size: %lluMB\n", cardSize);
 #endif
 
-  // listDir(FILESYSTEM, "/", 2);
-
-  if(!loadBadgeInfo(&info))
+  if (!loadBadgeInfo(&info))
   {
     loadDefaultInfo();
   }
 
-  if (print_wakeup_reason() == ESP_SLEEP_WAKEUP_EXT0)
+  if(esp_sleep_get_wakeup_cause()== ESP_SLEEP_WAKEUP_UNDEFINED)
   {
-    // 唤醒将启动web server
-    Serial.print("Boot Count : ");
-    Serial.println(wakeupCount);
-  }
-  else
-  {
-    // 复位启动
-    Serial.println("System Restart");
-
-    printFile(BADGE_CONFIG_FILE_NAME);
-
-    updateWindows();
-
-    // 初始化定时器
-    // if (!(pTimer = xTimerCreate("timer1",
-    //                             60000 / portTICK_PERIOD_MS,
-    //                             pdTRUE,
-    //                             NULL,
-    //                             pTimerOutCallback)))
-    // {
-    //   Serial.println("Start Timer FAIL");
-    //   esp_restart();
-    // }
-
-    // if (xTimerStart(pTimer, 0) == pdFALSE)
-    // {
-    //   Serial.println("Start Timer FAIL");
-    //   esp_restart();
-    // }
+      showMianPage();
   }
 
-  // 初始化webserver and wifi ap mode
   WebServerStart();
 
   button1.attachClick(click1);
@@ -834,3 +736,66 @@ void loop()
   button2.tick();
   button3.tick();
 }
+
+
+#ifdef __DEBUG
+
+// Prints the content of a file to the Serial
+void printFile(const char *filename)
+{
+  // Open file for reading
+  File file = FILESYSTEM.open(filename);
+  if (!file)
+  {
+    Serial.println(F("Failed to read file"));
+    return;
+  }
+  // Extract each characters by one by one
+  while (file.available())
+  {
+    Serial.print((char)file.read());
+  }
+  Serial.println();
+  // Close the file (File's destructor doesn't close the file)
+  file.close();
+}
+
+void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
+{
+  Serial.printf("Listing directory: %s\r\n", dirname);
+
+  File root = fs.open(dirname);
+  if (!root)
+  {
+    Serial.println("- failed to open directory");
+    return;
+  }
+  if (!root.isDirectory())
+  {
+    Serial.println(" - not a directory");
+    return;
+  }
+
+  File file = root.openNextFile();
+  while (file)
+  {
+    if (file.isDirectory())
+    {
+      Serial.print("  DIR : ");
+      Serial.println(file.name());
+      if (levels)
+      {
+        listDir(fs, file.name(), levels - 1);
+      }
+    }
+    else
+    {
+      Serial.print("  FILE: ");
+      Serial.print(file.name());
+      Serial.print("\tSIZE: ");
+      Serial.println(file.size());
+    }
+    file = root.openNextFile();
+  }
+}
+#endif
