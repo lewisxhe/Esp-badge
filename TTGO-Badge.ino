@@ -72,7 +72,6 @@ const GFXfont *fonts[] = {
 // #define USE_SD
 // #define USE_AP_MODE
 
-
 #ifdef USE_SD
 /*
  * SD Card | ESP32
@@ -100,7 +99,6 @@ SPIClass sdSPI(VSPI);
 
 #include "esp_wifi.h"
 #include "Esp.h"
-
 
 /*100 * 100 bmp fromat*/
 //https://www.onlineconverter.com/jpg-to-bmp
@@ -220,7 +218,8 @@ bool loadBadgeInfo(Badge_Info_t *info)
   }
 
   File file = FILESYSTEM.open(BADGE_CONFIG_FILE_NAME);
-  if(!file){
+  if (!file)
+  {
     Serial.println("Open Fial -->");
     return false;
   }
@@ -231,16 +230,21 @@ bool loadBadgeInfo(Badge_Info_t *info)
     file.close();
     return false;
   }
+  Serial.println("parse success\n");
 
   root.printTo(Serial);
 
+  if (!root.get<const char *>("company") || !root.get<const char *>("name") || !root.get<const char *>("address") || !root.get<const char *>("email") || !root.get<const char *>("link") || !root.get<const char *>("tel"))
+  {
+    file.close();
+    return false;
+  }
   strlcpy(info->company, root["company"], sizeof(info->company));
   strlcpy(info->name, root["name"], sizeof(info->name));
   strlcpy(info->address, root["address"], sizeof(info->address));
   strlcpy(info->email, root["email"], sizeof(info->email));
   strlcpy(info->link, root["link"], sizeof(info->link));
   strlcpy(info->tel, root["tel"], sizeof(info->tel));
-
   file.close();
   return true;
 }
@@ -255,14 +259,14 @@ void WebServerStart(void)
 
 #ifdef USE_AP_MODE
   uint8_t mac[6];
-  char apName[18] = { 0 };
+  char apName[18] = {0};
   IPAddress apIP = IPAddress(192, 168, 1, 1);
 
   WiFi.mode(WIFI_AP);
 
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
 
-  esp_wifi_get_mac(WIFI_IF_STA,mac);
+  esp_wifi_get_mac(WIFI_IF_STA, mac);
 
   sprintf(apName, "TTGO-Badge-%02X:%02X", mac[4], mac[5]);
 
@@ -718,9 +722,9 @@ void setup()
     loadDefaultInfo();
   }
 
-  if(esp_sleep_get_wakeup_cause()== ESP_SLEEP_WAKEUP_UNDEFINED)
+  if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_UNDEFINED)
   {
-      showMianPage();
+    showMianPage();
   }
 
   WebServerStart();
@@ -736,7 +740,6 @@ void loop()
   button2.tick();
   button3.tick();
 }
-
 
 #ifdef __DEBUG
 
