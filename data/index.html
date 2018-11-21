@@ -67,7 +67,7 @@
 									<img id="reg_info_file_base64" style="display:none;" />
 								</div>
 							</label>
-							<label class="err err-top160" id="reg_info_file_text">支持图片格式JPG/PNG，图片大小不超过2M</label>
+							<label class="err err-top160" id="reg_info_file_text">Support image format BMP, the image size does not exceed 2M</label>
 						</div>
 					</div>
 
@@ -82,8 +82,8 @@
 									<img id="qr_info_file_base64" style="display:none;" />
 								</div>
 							</label>
-							<p class="register-box-con2-box-pw">Support image format JPG/PNG, the image size does not exceed 2M</p>
-							<label class="err err-top160" id="reg_info_file_text">支持图片格式JPG/PNG，图片大小不超过2M</label>
+							<p class="register-box-con2-box-pw">Support image format BMP, the image size does not exceed 2M</p>
+							<label class="err err-top160" id="reg_info_file_text">Support image format BMP, the image size does not exceed 2M</label>
 						</div>
 					</div>
 
@@ -119,7 +119,7 @@
 					if ($("#reg_info_file_base64").attr("src")) {
 						$("#reg_info_file_text").hide();
 					} else {
-						$("#reg_info_file_text").html('请上传名片').show();
+						$("#reg_info_file_text").html('please upload image').show();
 						return false;
 					};
 					var company = document.getElementById("reg_info_company");
@@ -164,14 +164,14 @@
 							console.log("success upload");
 						}
 					});
-					alert("成功");
+					alert("pass");
 				},
 			}
 		);
 
 		var noregconfig = [
 			{ eleinput: "reg_info_www", eletext: "reg_info_www_text", rule: [{ reg: /(^(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$)|(^$)/, text: "请输入正确的网址" }] },
-			{ eleinput: "reg_info_address", eletext: "reg_info_address_text", rule: [{ reg: /^.{0,40}$/, text: "公司所在地址，不超过40个字" }] },
+			{ eleinput: "reg_info_address", eletext: "reg_info_address_text", rule: [{ reg: /^.{0,40}$/, text: "The address of the company, no more than 40 words" }] },
 		];
 		tbdnoValidate(noregconfig);
 		//end
@@ -187,12 +187,12 @@
 				console.log(f);
 				$("reg_info_file_text").hide();
 			} else {
-				$("#reg_info_file_text").html('支持图片格式JPG/PNG').show();
+				$("#reg_info_file_text").html('Only support image format BMP').show();
 				alert("error ");
 				return false;
 			}
 			if (f.size >= 50 * 1024) {
-				$("#reg_info_file_text").html('图片大小不超过50k').show();
+				$("#reg_info_file_text").html('Image size does not exceed 2M').show();
 				return false;
 			}
 			var baseID = "";
