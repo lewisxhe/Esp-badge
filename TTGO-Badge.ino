@@ -1,6 +1,5 @@
 // include library, include base class, make path known
 #include <GxEPD.h>
-
 #include <GxIO/GxIO_SPI/GxIO_SPI.cpp>
 #include <GxIO/GxIO.cpp>
 // select the display class to use, only one
@@ -59,8 +58,6 @@ const GFXfont *fonts[] = {
     &FreeSerifBoldItalic9pt7b,
     &FreeSerifItalic9pt7b};
 
-#include <JPEGDecoder.h>
-
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
@@ -69,7 +66,7 @@ const GFXfont *fonts[] = {
 #include <OneButton.h>
 
 // ----------->>>> SD
-// #define USE_SD
+#define USE_SD
 // #define USE_AP_MODE
 
 #ifdef USE_SD
@@ -88,7 +85,6 @@ const GFXfont *fonts[] = {
 #include "SD.h"
 #include "SPI.h"
 #define FILESYSTEM SD
-SPIClass sdSPI(VSPI);
 #else
 #include <SPIFFS.h>
 #define FILESYSTEM SPIFFS
@@ -127,8 +123,9 @@ typedef enum
 
 AsyncWebServer server(80);
 
-GxIO_Class io(SPI, SS, 17, 16); // arbitrary selection of 17, 16
-GxEPD_Class display(io, 16, 4); // arbitrary selection of (16), 4
+#include "board.h"
+GxIO_Class io(SPI, ELINK_SS, ELINK_DC, ELINK_RESET); 
+GxEPD_Class display(io, ELINK_RESET, ELINK_BUSY);   
 
 OneButton button1(GPIO_NUM_38, true);
 OneButton button2(GPIO_NUM_37, true);
@@ -142,6 +139,68 @@ uint8_t mono_palette_buffer[max_palette_pixels / 8];  // palette buffer for dept
 uint8_t color_palette_buffer[max_palette_pixels / 8]; // palette buffer for depth <= 8 c/w
 uint8_t input_buffer[3 * input_buffer_pixels];        // up to depth 24
 const char *path[2] = {DEFALUT_AVATAR_BMP, DEFALUT_QR_CODE_BMP};
+
+#ifdef __DEBUG
+
+// Prints the content of a file to the Serial
+void printFile(const char *filename)
+{
+  // Open file for reading
+  File file = FILESYSTEM.open(filename);
+  if (!file)
+  {
+    Serial.println(F("Failed to read file"));
+    return;
+  }
+  // Extract each characters by one by one
+  while (file.available())
+  {
+    Serial.print((char)file.read());
+  }
+  Serial.println();
+  // Close the file (File's destructor doesn't close the file)
+  file.close();
+}
+
+void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
+{
+  Serial.printf("Listing directory: %s\r\n", dirname);
+
+  File root = fs.open(dirname);
+  if (!root)
+  {
+    Serial.println("- failed to open directory");
+    return;
+  }
+  if (!root.isDirectory())
+  {
+    Serial.println(" - not a directory");
+    return;
+  }
+
+  File file = root.openNextFile();
+  while (file)
+  {
+    if (file.isDirectory())
+    {
+      Serial.print("  DIR : ");
+      Serial.println(file.name());
+      if (levels)
+      {
+        listDir(fs, file.name(), levels - 1);
+      }
+    }
+    else
+    {
+      Serial.print("  FILE: ");
+      Serial.print(file.name());
+      Serial.print("\tSIZE: ");
+      Serial.println(file.size());
+    }
+    file = root.openNextFile();
+  }
+}
+#endif
 
 void displayText(const String &str, int16_t y, uint8_t alignment)
 {
@@ -685,11 +744,7 @@ void displayInit(void)
   display.setTextSize(0);
 }
 
-/**
- * @brief  
- * @note   
- * @retval None
- */
+
 void setup()
 {
   Serial.begin(115200);
@@ -697,9 +752,10 @@ void setup()
 
   Serial.println("free heap:" + String(ESP.getHeapSize()));
 
+  SPI.begin(SPI_CLK, SPI_MISO, SPI_MOSI, -1);
+
 #ifdef USE_SD
-  sdSPI.begin(14, 2, 15, 13);
-  if (!FILESYSTEM.begin(13, sdSPI))
+  if (!FILESYSTEM.begin(SDCARD_SS))
 #else
   if (!FILESYSTEM.begin())
 #endif
@@ -712,7 +768,7 @@ void setup()
     }
   }
 
-#ifdef USE_SD_MMC
+#ifdef USE_SD
   uint64_t cardSize = FILESYSTEM.cardSize() / (1024 * 1024);
   Serial.printf("SD Card Size: %lluMB\n", cardSize);
 #endif
@@ -740,65 +796,3 @@ void loop()
   button2.tick();
   button3.tick();
 }
-
-#ifdef __DEBUG
-
-// Prints the content of a file to the Serial
-void printFile(const char *filename)
-{
-  // Open file for reading
-  File file = FILESYSTEM.open(filename);
-  if (!file)
-  {
-    Serial.println(F("Failed to read file"));
-    return;
-  }
-  // Extract each characters by one by one
-  while (file.available())
-  {
-    Serial.print((char)file.read());
-  }
-  Serial.println();
-  // Close the file (File's destructor doesn't close the file)
-  file.close();
-}
-
-void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
-{
-  Serial.printf("Listing directory: %s\r\n", dirname);
-
-  File root = fs.open(dirname);
-  if (!root)
-  {
-    Serial.println("- failed to open directory");
-    return;
-  }
-  if (!root.isDirectory())
-  {
-    Serial.println(" - not a directory");
-    return;
-  }
-
-  File file = root.openNextFile();
-  while (file)
-  {
-    if (file.isDirectory())
-    {
-      Serial.print("  DIR : ");
-      Serial.println(file.name());
-      if (levels)
-      {
-        listDir(fs, file.name(), levels - 1);
-      }
-    }
-    else
-    {
-      Serial.print("  FILE: ");
-      Serial.print(file.name());
-      Serial.print("\tSIZE: ");
-      Serial.println(file.size());
-    }
-    file = root.openNextFile();
-  }
-}
-#endif
