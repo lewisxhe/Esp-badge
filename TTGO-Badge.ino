@@ -66,8 +66,9 @@ const GFXfont *fonts[] = {
 #include <OneButton.h>
 
 // ----------->>>> SD
-#define USE_SD
+// #define USE_SD
 // #define USE_AP_MODE
+// #define __DEBUG
 
 #ifdef USE_SD
 /*
@@ -124,8 +125,8 @@ typedef enum
 AsyncWebServer server(80);
 
 #include "board.h"
-GxIO_Class io(SPI, ELINK_SS, ELINK_DC, ELINK_RESET); 
-GxEPD_Class display(io, ELINK_RESET, ELINK_BUSY);   
+GxIO_Class io(SPI, ELINK_SS, ELINK_DC, ELINK_RESET);
+GxEPD_Class display(io, ELINK_RESET, ELINK_BUSY);
 
 OneButton button1(GPIO_NUM_38, true);
 OneButton button2(GPIO_NUM_37, true);
@@ -308,11 +309,6 @@ bool loadBadgeInfo(Badge_Info_t *info)
   return true;
 }
 
-/**
- * @brief  
- * @note   
- * @retval None
- */
 void WebServerStart(void)
 {
 
@@ -492,11 +488,15 @@ void showQrPage(void)
 void click1()
 {
   Serial.println("Button 1 click.");
+#ifdef __DEBUG
+  listDir(FILESYSTEM, "/", 2);
+#else
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_38, LOW);
   Serial.println("Going to sleep now");
   delay(2000);
   esp_deep_sleep_start();
   Serial.println("This will never be printed");
+#endif
 }
 
 void click2()
@@ -743,7 +743,6 @@ void displayInit(void)
   display.setFont(&DEFALUT_FONT);
   display.setTextSize(0);
 }
-
 
 void setup()
 {
