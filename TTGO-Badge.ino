@@ -109,7 +109,8 @@ AsyncWebServer server(80);
 GxIO_Class io(SPI, ELINK_SS, ELINK_DC, ELINK_RESET);
 GxEPD_Class display(io, ELINK_RESET, ELINK_BUSY);
 
-StaticJsonBuffer<512> jsonBuffer;
+
+
 Badge_Info_t info;
 static const uint16_t input_buffer_pixels = 20;       // may affect performance
 static const uint16_t max_palette_pixels = 256;       // for depth <= 8
@@ -225,9 +226,12 @@ void saveBadgeInfo(Badge_Info_t *info)
         Serial.println(F("Failed to create file"));
         return;
     }
-    // Parse the root object
+#if ARDUINOJSON_VERSION_MAJOR == 5
+    StaticJsonBuffer<256> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
-
+#elif ARDUINOJSON_VERSION_MAJOR == 6
+    StaticJsonDocument<256> root;
+#endif
     // Set the values
     root["company"] = info->company;
     root["name"] = info->name;
@@ -236,11 +240,14 @@ void saveBadgeInfo(Badge_Info_t *info)
     root["link"] = info->link;
     root["tel"] = info->tel;
 
-    // Serialize JSON to file
-    if (root.printTo(file) == 0) {
+#if ARDUINOJSON_VERSION_MAJOR == 5
+    if (root.printTo(file) == 0)
+#elif ARDUINOJSON_VERSION_MAJOR == 6
+    if (serializeJson(root, file) == 0)
+#endif
+    {
         Serial.println(F("Failed to write to file"));
     }
-
     // Close the file (File's destructor doesn't close the file)
     file.close();
 }
@@ -268,16 +275,23 @@ bool loadBadgeInfo(Badge_Info_t *info)
         Serial.println("Open Fial -->");
         return false;
     }
+
+#if ARDUINOJSON_VERSION_MAJOR == 5
+    StaticJsonBuffer<256> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
     if (!root.success()) {
         Serial.println(F("Failed to read file, using default configuration"));
         file.close();
         return false;
     }
-    Serial.println("parse success\n");
-
     root.printTo(Serial);
-
+#elif ARDUINOJSON_VERSION_MAJOR == 6
+    StaticJsonDocument<256> root;
+    DeserializationError error = deserializeJson(root, file);
+    if (error) {
+        Serial.println(F("Failed to read file, using default configuration"));
+    }
+#endif
     if (!root.get<const char *>("company") || !root.get<const char *>("name") || !root.get<const char *>("address") || !root.get<const char *>("email") || !root.get<const char *>("link") || !root.get<const char *>("tel")) {
         file.close();
         return false;
@@ -663,8 +677,7 @@ void setup()
         }
     }
     SPI.begin(SPI_CLK, SPI_MISO, SPI_MOSI, -1);
-    if (!FILESYSTEM.begin())
-    {
+    if (!FILESYSTEM.begin()) {
         Serial.println("FILESYSTEM is not database");
         Serial.println("Please use Arduino ESP32 Sketch data Upload files");
         while (1) {
