@@ -32,6 +32,19 @@ TTGO Badge & TTGO EPaper Series
 | SPRAM               | N/A       | N/A       | N/A       | supported | N/A       | supported |
 | Support EPaper Size | Full Size | Full Size | Full Size | Full Size | Full Size | Full Size |
 
+## First
+
+- For the first time, change the macro definition in `board_def.h` according to the corresponding layout and screen, and change the version to be used to 1.
+```
+#define TTGO_T5_1_2 1
+#define TTGO_T5_2_0 0
+#define TTGO_T5_2_1 0
+#define TTGO_T5_2_2 0
+#define TTGO_T5_2_3 0
+```
+
+- Check the screen size and color used. The default configuration screen list can be viewed in `board_def.h`. The default configuration is based on the size of the TTGO store. Except for the T5 V1.2 version, the T5 V1.2 needs to be configured according to the actual situation. The corresponding header file, 1.54 inches will not be fully displayed in this program
+
 ## Install the following dependency library files:
 - [Button2](https://github.com/lewisxhe/Button2)
 - [GxEPD](https://github.com/ZinggJM/GxEPD)

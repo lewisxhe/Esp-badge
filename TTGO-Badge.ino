@@ -19,7 +19,6 @@
 // #include <GxGDEW075Z09/GxGDEW075Z09.h>    // 7.5" b/w/r
 
 
-
 #include <Fonts/FreeMono9pt7b.h>
 #include <Fonts/FreeMonoBoldOblique9pt7b.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
