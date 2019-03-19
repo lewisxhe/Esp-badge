@@ -32,6 +32,16 @@ TTGO Badge & TTGO EPaper Series
 | SPRAM               | N/A       | N/A       | N/A       | supported | N/A       | supported |
 | Support EPaper Size | Full Size | Full Size | Full Size | Full Size | Full Size | Full Size |
 
+
+## Note
+- There are two versions of the current 2.13 e-paper, all of which will use the `GxGDE0213B72` model later, and the `GxGDE0213B1` model has been stopped. The default setting is `GxGDE0213B72`. If the old version screen is changed, please change the corresponding header in `board_def.h`. file
+
+
+    ```
+    // #include <GxGDE0213B1/GxGDE0213B1.h> // 2.13" b/w
+    #include <GxGDE0213B72/GxGDE0213B72.h> // 2.13" b/w
+    ```
+
 ## First
 
 - For the first time, change the macro definition in `board_def.h` according to the corresponding layout and screen, and change the version to be used to 1.

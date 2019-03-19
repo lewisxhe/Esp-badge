@@ -1,5 +1,5 @@
 
-#define TTGO_T5_1_2 1
+#define TTGO_T5_1_2 0
 #define TTGO_T5_2_0 0
 #define TTGO_T5_2_1 0
 #define TTGO_T5_2_2 0
@@ -60,7 +60,8 @@
 #define SPEAKER_OUT 25
 
 #elif (TTGO_T5_2_0)||(TTGO_T5_2_3)
-#include <GxGDE0213B1/GxGDE0213B1.h>      // 2.13" b/w
+// #include <GxGDE0213B1/GxGDE0213B1.h>      // 2.13" b/w
+#include <GxGDE0213B72/GxGDE0213B72.h>      // 2.13" b/w
 #define SPI_MOSI 23
 #define SPI_MISO -1
 #define SPI_CLK 18
