@@ -57,7 +57,7 @@ TTGO Badge & TTGO EPaper Series
 
 ## Install the following dependency library files:
 - [Button2](https://github.com/lewisxhe/Button2)
-- [GxEPD](https://github.com/ZinggJM/GxEPD)
+- [GxEPD](https://github.com/lewisxhe/GxEPD)
 - [Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
 - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
 - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
