@@ -4,8 +4,9 @@
 #define TTGO_T5_2_1 0
 #define TTGO_T5_2_2 0
 #define TTGO_T5_2_3 0
+#define TTGO_T5_2_4 0
 
-#if TTGO_T5_1_2
+#if (TTGO_T5_1_2) || (TTGO_T5_2_4)
 //#include <GxGDEP015OC1/GxGDEP015OC1.h>    // 1.54" b/w
 // #include <GxGDEW0154Z04/GxGDEW0154Z04.h>  // 1./54" b/w/r 200x200
 //#include <GxGDEW0154Z17/GxGDEW0154Z17.h>  // 1.54" b/w/r 152x152
