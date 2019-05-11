@@ -42,6 +42,8 @@ TTGO Badge & TTGO EPaper Series
     #include <GxGDE0213B72/GxGDE0213B72.h> // 2.13" b/w
     ```
 
+- 2019/5/11 The T5_V2.4 version is the same as the T5_V1.2 version pin pin. Add `IO19` to the power amplifier power control. Control IO19 to high level to turn on the power amplifier power supply, low level is off.
+- 
 ## First
 
 - For the first time, change the macro definition in `board_def.h` according to the corresponding layout and screen, and change the version to be used to 1.

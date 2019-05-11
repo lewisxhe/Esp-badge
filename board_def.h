@@ -37,6 +37,10 @@
 
 #define SPEAKER_OUT 25
 
+#if TTGO_T5_2_4
+#define AMP_POWER_CTRL  19
+#endif
+
 #elif TTGO_T5_2_1
 #include <GxGDEH029A1/GxGDEH029A1.h> // 2.9" b/w
 #define ELINK_BUSY 4

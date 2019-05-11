@@ -666,6 +666,13 @@ void setup()
 {
     Serial.begin(115200);
     delay(500);
+
+// It is only necessary to turn on the power amplifier power supply on the T5_V24 board.
+#ifdef AMP_POWER_CTRL
+    pinMode(AMP_POWER_CTRL, OUTPUT);
+    digitalWrite(AMP_POWER_CTRL, HIGH);
+#endif
+
     if (SPEAKER_OUT > 0) {
         ledcSetup(CHANNEL_0, 1000, 8);
         ledcAttachPin(SPEAKER_OUT, CHANNEL_0);
