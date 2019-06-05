@@ -34,12 +34,13 @@ TTGO Badge & TTGO EPaper Series
 
 
 ## Note
-- There are two versions of the current 2.13 e-paper, all of which will use the `GxGDE0213B72` model later, and the `GxGDE0213B1` model has been stopped. The default setting is `GxGDE0213B72`. If the old version screen is changed, please change the corresponding header in `board_def.h`. file
+- There are currently three versions of 2.13 e-paper, all of which will use the `GxGDE0213B72B` model later, and the `GxGDE0213B1` and `GxGDE0213B72` models have been stopped. The default setting is "GxGDE0213B72B". If the old version screen has changed, change the corresponding title in `board_def.h`.
 
 
     ```
-    // #include <GxGDE0213B1/GxGDE0213B1.h> // 2.13" b/w
-    #include <GxGDE0213B72/GxGDE0213B72.h> // 2.13" b/w
+    // #include <GxGDE0213B1/GxGDE0213B1.h>       // 2.13" b/w
+    // #include <GxGDE0213B72/GxGDE0213B72.h>     // 2.13" b/w
+    #include <GxGDE0213B72B/GxGDE0213B72B.h>      // 2.13" b/w
     ```
 
 - 2019/5/11 The T5_V2.4 version is the same as the T5_V1.2 version pin pin. Add `IO19` to the power amplifier power control. Control IO19 to high level to turn on the power amplifier power supply, low level is off.
