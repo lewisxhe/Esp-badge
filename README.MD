@@ -87,7 +87,7 @@ TTGO Badge & TTGO EPaper Series
 - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
 - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
 - [ArduinoJson](https://github.com/bblanchon/ArduinoJson/releases)
-
+- [ESP8266Audio](https://github.com/earlephilhower/ESP8266Audio)
     ~~**CAUTION**: The Arduino Library Manager installs the ArduinoJson version 6 by default.~~
     ~~In here using version 5 is recommended because version 6 is still in beta stage. Please select 5.13.2 version to install on the releas page.~~
 
