@@ -34,7 +34,9 @@ TTGO Badge & TTGO EPaper Series
 
 
 ## Note1: 
+
 **Max98357**
+
 | Name | T5 V2.8 |
 | ---- | ------- |
 | BCK  | 26      |
@@ -42,6 +44,7 @@ TTGO Badge & TTGO EPaper Series
 | DOUT | 19      |
 
 **Mic**
+
 | Name | T5 V2.8 |
 | ---- | ------- |
 | BCK  | 26      |
