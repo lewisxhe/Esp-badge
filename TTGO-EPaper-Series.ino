@@ -18,7 +18,6 @@
 //#include <GxGDEW075T8/GxGDEW075T8.h>      // 7.5" b/w
 // #include <GxGDEW075Z09/GxGDEW075Z09.h>    // 7.5" b/w/r
 
-
 #include <Fonts/FreeMono9pt7b.h>
 #include <Fonts/FreeMonoBoldOblique9pt7b.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
@@ -57,13 +56,13 @@ const GFXfont *fonts[] = {
     &FreeSerif9pt7b,
     &FreeSerifBold9pt7b,
     &FreeSerifBoldItalic9pt7b,
-    &FreeSerifItalic9pt7b
-};
+    &FreeSerifItalic9pt7b};
 
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
+#include <Wire.h>
 
 #include "SD.h"
 #include "SPI.h"
@@ -84,12 +83,14 @@ const GFXfont *fonts[] = {
 #define BADGE_CONFIG_FILE_NAME "/badge.data"
 #define DEFALUT_AVATAR_BMP "/avatar.bmp"
 #define DEFALUT_QR_CODE_BMP "/qr.bmp"
-#define WIFI_SSID     "Put your wifi ssid"
+#define WIFI_SSID "Put your wifi ssid"
 #define WIFI_PASSWORD "Put your wifi password"
 #define CHANNEL_0 0
+#define IP5306_ADDR 0X75
+#define IP5306_REG_SYS_CTL0 0x00
 
-
-typedef struct {
+typedef struct
+{
     char name[32];
     char link[64];
     char tel[64];
@@ -98,7 +99,8 @@ typedef struct {
     char address[128];
 } Badge_Info_t;
 
-typedef enum {
+typedef enum
+{
     RIGHT_ALIGNMENT = 0,
     LEFT_ALIGNMENT,
     CENTER_ALIGNMENT,
@@ -109,8 +111,6 @@ AsyncWebServer server(80);
 GxIO_Class io(SPI, ELINK_SS, ELINK_DC, ELINK_RESET);
 GxEPD_Class display(io, ELINK_RESET, ELINK_BUSY);
 
-
-
 Badge_Info_t info;
 static const uint16_t input_buffer_pixels = 20;       // may affect performance
 static const uint16_t max_palette_pixels = 256;       // for depth <= 8
@@ -119,17 +119,18 @@ uint8_t color_palette_buffer[max_palette_pixels / 8]; // palette buffer for dept
 uint8_t input_buffer[3 * input_buffer_pixels];        // up to depth 24
 const char *path[2] = {DEFALUT_AVATAR_BMP, DEFALUT_QR_CODE_BMP};
 
-
 Button2 *pBtns = nullptr;
-uint8_t g_btns[] =  BUTTONS_MAP;
-
+uint8_t g_btns[] = BUTTONS_MAP;
 
 void button_handle(uint8_t gpio)
 {
-    switch (gpio) {
+    switch (gpio)
+    {
 #if BUTTON_1
-    case BUTTON_1: {
-        esp_sleep_enable_ext0_wakeup((gpio_num_t)BUTTON_1, LOW);
+    case BUTTON_1:
+    {
+        // esp_sleep_enable_ext0_wakeup((gpio_num_t)BUTTON_1, LOW);
+        esp_sleep_enable_ext1_wakeup(((uint64_t)(((uint64_t)1) << BUTTON_1)), ESP_EXT1_WAKEUP_ALL_LOW);
         Serial.println("Going to sleep now");
         delay(2000);
         esp_deep_sleep_start();
@@ -138,7 +139,8 @@ void button_handle(uint8_t gpio)
 #endif
 
 #if BUTTON_2
-    case BUTTON_2: {
+    case BUTTON_2:
+    {
         static int i = 0;
         Serial.printf("Show Num: %d font\n", i);
         i = ((i + 1) >= sizeof(fonts) / sizeof(fonts[0])) ? 0 : i + 1;
@@ -149,12 +151,16 @@ void button_handle(uint8_t gpio)
 #endif
 
 #if BUTTON_3
-    case BUTTON_3: {
+    case BUTTON_3:
+    {
         static bool index = 1;
-        if (!index) {
+        if (!index)
+        {
             showMianPage();
             index = true;
-        } else {
+        }
+        else
+        {
             showQrPage();
             index = false;
         }
@@ -168,8 +174,10 @@ void button_handle(uint8_t gpio)
 
 void button_callback(Button2 &b)
 {
-    for (int i = 0; i < sizeof(g_btns) / sizeof(g_btns[0]); ++i) {
-        if (pBtns[i] == b) {
+    for (int i = 0; i < sizeof(g_btns) / sizeof(g_btns[0]); ++i)
+    {
+        if (pBtns[i] == b)
+        {
             Serial.printf("btn: %u press\n", pBtns[i].getAttachPin());
             button_handle(pBtns[i].getAttachPin());
         }
@@ -179,8 +187,9 @@ void button_callback(Button2 &b)
 void button_init()
 {
     uint8_t args = sizeof(g_btns) / sizeof(g_btns[0]);
-    pBtns = new Button2 [args];
-    for (int i = 0; i < args; ++i) {
+    pBtns = new Button2[args];
+    for (int i = 0; i < args; ++i)
+    {
         pBtns[i] = Button2(g_btns[i]);
         pBtns[i].setPressedHandler(button_callback);
     }
@@ -188,11 +197,11 @@ void button_init()
 
 void button_loop()
 {
-    for (int i = 0; i < sizeof(g_btns) / sizeof(g_btns[0]); ++i) {
+    for (int i = 0; i < sizeof(g_btns) / sizeof(g_btns[0]); ++i)
+    {
         pBtns[i].loop();
     }
 }
-
 
 void displayText(const String &str, int16_t y, uint8_t alignment)
 {
@@ -202,7 +211,8 @@ void displayText(const String &str, int16_t y, uint8_t alignment)
     display.setCursor(x, y);
     display.getTextBounds(str, x, y, &x1, &y1, &w, &h);
 
-    switch (alignment) {
+    switch (alignment)
+    {
     case RIGHT_ALIGNMENT:
         display.setCursor(display.width() - w - x1, y);
         break;
@@ -222,7 +232,8 @@ void saveBadgeInfo(Badge_Info_t *info)
 {
     // Open file for writing
     File file = FILESYSTEM.open(BADGE_CONFIG_FILE_NAME, FILE_WRITE);
-    if (!file) {
+    if (!file)
+    {
         Serial.println(F("Failed to create file"));
         return;
     }
@@ -265,13 +276,15 @@ void loadDefaultInfo(void)
 
 bool loadBadgeInfo(Badge_Info_t *info)
 {
-    if (!FILESYSTEM.exists(BADGE_CONFIG_FILE_NAME)) {
+    if (!FILESYSTEM.exists(BADGE_CONFIG_FILE_NAME))
+    {
         Serial.println("load configure fail");
         return false;
     }
 
     File file = FILESYSTEM.open(BADGE_CONFIG_FILE_NAME);
-    if (!file) {
+    if (!file)
+    {
         Serial.println("Open Fial -->");
         return false;
     }
@@ -279,7 +292,8 @@ bool loadBadgeInfo(Badge_Info_t *info)
 #if ARDUINOJSON_VERSION_MAJOR == 5
     StaticJsonBuffer<256> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
-    if (!root.success()) {
+    if (!root.success())
+    {
         Serial.println(F("Failed to read file, using default configuration"));
         file.close();
         return false;
@@ -288,11 +302,13 @@ bool loadBadgeInfo(Badge_Info_t *info)
 #elif ARDUINOJSON_VERSION_MAJOR == 6
     StaticJsonDocument<256> root;
     DeserializationError error = deserializeJson(root, file);
-    if (error) {
+    if (error)
+    {
         Serial.println(F("Failed to read file, using default configuration"));
     }
 #endif
-    if (!root.get<const char *>("company") || !root.get<const char *>("name") || !root.get<const char *>("address") || !root.get<const char *>("email") || !root.get<const char *>("link") || !root.get<const char *>("tel")) {
+    if (!root.get<const char *>("company") || !root.get<const char *>("name") || !root.get<const char *>("address") || !root.get<const char *>("email") || !root.get<const char *>("link") || !root.get<const char *>("tel"))
+    {
         file.close();
         return false;
     }
@@ -322,10 +338,13 @@ void WebServerStart(void)
 
     sprintf(apName, "TTGO-Badge-%02X:%02X", mac[4], mac[5]);
 
-    if (!WiFi.softAP(apName, NULL, 1, 0, 1)) {
+    if (!WiFi.softAP(apName, NULL, 1, 0, 1))
+    {
         Serial.println("AP Config failed.");
         return;
-    } else {
+    }
+    else
+    {
         Serial.println("AP Config Success.");
         Serial.print("AP MAC: ");
         Serial.println(WiFi.softAPmacAddress());
@@ -334,7 +353,8 @@ void WebServerStart(void)
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-    while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    while (WiFi.waitForConnectResult() != WL_CONNECTED)
+    {
         Serial.print(".");
         esp_restart();
     }
@@ -343,76 +363,94 @@ void WebServerStart(void)
     Serial.println(WiFi.localIP());
 #endif
 
-    if (MDNS.begin("ttgo")) {
+    if (MDNS.begin("ttgo"))
+    {
         Serial.println("MDNS responder started");
     }
 
     server.serveStatic("/", FILESYSTEM, "/").setDefaultFile("index.html");
 
-    server.on("css/main.css", HTTP_GET, [](AsyncWebServerRequest * request) {
+    server.on("css/main.css", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(FILESYSTEM, "css/main.css", "text/css");
     });
-    server.on("js/jquery.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
+    server.on("js/jquery.min.js", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(FILESYSTEM, "js/jquery.min.js", "application/javascript");
     });
-    server.on("js/tbdValidate.js", HTTP_GET, [](AsyncWebServerRequest * request) {
+    server.on("js/tbdValidate.js", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(FILESYSTEM, "js/tbdValidate.js", "application/javascript");
     });
-    server.on("/data", HTTP_POST, [](AsyncWebServerRequest * request) {
+    server.on("/data", HTTP_POST, [](AsyncWebServerRequest *request) {
         request->send(200, "text/plain", "");
 
-        for (int i = 0; i < request->params(); i++) {
+        for (int i = 0; i < request->params(); i++)
+        {
             String name = request->getParam(i)->name();
             String params = request->getParam(i)->value();
             Serial.println(name + " : " + params);
-            if (name == "company") {
+            if (name == "company")
+            {
                 strlcpy(info.company, params.c_str(), sizeof(info.company));
-            } else if (name == "name") {
+            }
+            else if (name == "name")
+            {
                 strlcpy(info.name, params.c_str(), sizeof(info.name));
-            } else if (name == "address") {
+            }
+            else if (name == "address")
+            {
                 strlcpy(info.address, params.c_str(), sizeof(info.address));
-            } else if (name == "email") {
+            }
+            else if (name == "email")
+            {
                 strlcpy(info.email, params.c_str(), sizeof(info.email));
-            } else if (name == "link") {
+            }
+            else if (name == "link")
+            {
                 strlcpy(info.link, params.c_str(), sizeof(info.link));
-            } else if (name == "tel") {
+            }
+            else if (name == "tel")
+            {
                 strlcpy(info.tel, params.c_str(), sizeof(info.tel));
             }
         }
         saveBadgeInfo(&info);
     });
 
-    server.onFileUpload([](AsyncWebServerRequest * request, const String & filename, size_t index, uint8_t *data, size_t len, bool final) {
+    server.onFileUpload([](AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
         static File file;
         static int pathIndex = 0;
-        if (!index) {
+        if (!index)
+        {
             Serial.printf("UploadStart: %s\n", filename.c_str());
             file = FILESYSTEM.open(path[pathIndex], FILE_WRITE);
-            if (!file) {
+            if (!file)
+            {
                 Serial.println("Open FAIL");
                 request->send(500, "text/plain", "hander error");
                 return;
             }
         }
-        if (file.write(data, len) != len) {
+        if (file.write(data, len) != len)
+        {
             Serial.println("Write fail");
             request->send(500, "text/plain", "hander error");
             file.close();
             return;
         }
 
-        if (final) {
+        if (final)
+        {
             Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index + len);
             file.close();
             request->send(200, "text/plain", "");
-            if (++pathIndex >= 2) {
+            if (++pathIndex >= 2)
+            {
                 pathIndex = 0;
                 showMianPage();
             }
         }
     });
 
-    server.onNotFound([](AsyncWebServerRequest * request) {
+    server.onNotFound([](AsyncWebServerRequest *request) {
         request->send(404, "text/plain", "Not found");
     });
 
@@ -443,7 +481,6 @@ void showQrPage(void)
     displayText(String(info.address), 90, RIGHT_ALIGNMENT);
     display.update();
 }
-
 
 uint16_t read16(File &f)
 {
@@ -479,13 +516,15 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
     Serial.println('\'');
 
     file = FILESYSTEM.open(filename, FILE_READ);
-    if (!file) {
+    if (!file)
+    {
         Serial.print("File not found");
         return;
     }
 
     // Parse BMP header
-    if (read16(file) == 0x4D42) { // BMP signature
+    if (read16(file) == 0x4D42)
+    { // BMP signature
         uint32_t fileSize = read32(file);
         uint32_t creatorBytes = read32(file);
         uint32_t imageOffset = read32(file); // Start of image data
@@ -495,7 +534,8 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
         uint16_t planes = read16(file);
         uint16_t depth = read16(file); // bits per pixel
         uint32_t format = read32(file);
-        if ((planes == 1) && ((format == 0) || (format == 3))) { // uncompressed is handled, 565 also
+        if ((planes == 1) && ((format == 0) || (format == 3)))
+        { // uncompressed is handled, 565 also
             Serial.print("File size: ");
             Serial.println(fileSize);
             Serial.print("Image Offset: ");
@@ -512,7 +552,8 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
             uint32_t rowSize = (width * depth / 8 + 3) & ~3;
             if (depth < 8)
                 rowSize = ((width * depth + 8 - depth) / 8 + 3) & ~3;
-            if (height < 0) {
+            if (height < 0)
+            {
                 height = -height;
                 flip = false;
             }
@@ -529,11 +570,13 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
             bool whitish, colored;
             if (depth == 1)
                 with_color = false;
-            if (depth <= 8) {
+            if (depth <= 8)
+            {
                 if (depth < 8)
                     bitmask >>= depth;
                 file.seek(54); //palette is always @ 54
-                for (uint16_t pn = 0; pn < (1 << depth); pn++) {
+                for (uint16_t pn = 0; pn < (1 << depth); pn++)
+                {
                     blue = file.read();
                     green = file.read();
                     red = file.read();
@@ -550,7 +593,8 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
             }
             display.fillScreen(GxEPD_WHITE);
             uint32_t rowPosition = flip ? imageOffset + (height - h) * rowSize : imageOffset;
-            for (uint16_t row = 0; row < h; row++, rowPosition += rowSize) { // for each line
+            for (uint16_t row = 0; row < h; row++, rowPosition += rowSize)
+            { // for each line
                 uint32_t in_remain = rowSize;
                 uint32_t in_idx = 0;
                 uint32_t in_bytes = 0;
@@ -558,14 +602,17 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
                 uint8_t in_bits = 0; // for depth <= 8
                 uint16_t color = GxEPD_WHITE;
                 file.seek(rowPosition);
-                for (uint16_t col = 0; col < w; col++) { // for each pixel
+                for (uint16_t col = 0; col < w; col++)
+                { // for each pixel
                     // Time to read more pixel data?
-                    if (in_idx >= in_bytes) { // ok, exact match for 24bit also (size IS multiple of 3)
+                    if (in_idx >= in_bytes)
+                    { // ok, exact match for 24bit also (size IS multiple of 3)
                         in_bytes = file.read(input_buffer, in_remain > sizeof(input_buffer) ? sizeof(input_buffer) : in_remain);
                         in_remain -= in_bytes;
                         in_idx = 0;
                     }
-                    switch (depth) {
+                    switch (depth)
+                    {
                     case 24:
                         blue = input_buffer[in_idx++];
                         green = input_buffer[in_idx++];
@@ -573,14 +620,18 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
                         whitish = with_color ? ((red > 0x80) && (green > 0x80) && (blue > 0x80)) : ((red + green + blue) > 3 * 0x80); // whitish
                         colored = (red > 0xF0) || ((green > 0xF0) && (blue > 0xF0));                                                  // reddish or yellowish?
                         break;
-                    case 16: {
+                    case 16:
+                    {
                         uint8_t lsb = input_buffer[in_idx++];
                         uint8_t msb = input_buffer[in_idx++];
-                        if (format == 0) { // 555
+                        if (format == 0)
+                        { // 555
                             blue = (lsb & 0x1F) << 3;
                             green = ((msb & 0x03) << 6) | ((lsb & 0xE0) >> 2);
                             red = (msb & 0x7C) << 1;
-                        } else { // 565
+                        }
+                        else
+                        { // 565
                             blue = (lsb & 0x1F) << 3;
                             green = ((msb & 0x07) << 5) | ((lsb & 0xE0) >> 3);
                             red = (msb & 0xF8);
@@ -591,8 +642,10 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
                     break;
                     case 1:
                     case 4:
-                    case 8: {
-                        if (0 == in_bits) {
+                    case 8:
+                    {
+                        if (0 == in_bits)
+                        {
                             in_byte = input_buffer[in_idx++];
                             in_bits = 8;
                         }
@@ -604,33 +657,39 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
                     }
                     break;
                     }
-                    if (whitish) {
+                    if (whitish)
+                    {
                         color = GxEPD_WHITE;
-                    } else if (colored && with_color) {
+                    }
+                    else if (colored && with_color)
+                    {
                         color = GxEPD_RED;
-                    } else {
+                    }
+                    else
+                    {
                         color = GxEPD_BLACK;
                     }
                     uint16_t yrow = y + (flip ? h - row - 1 : row);
                     display.drawPixel(x + col, yrow, color);
                 } // end pixel
-            }   // end line
+            }     // end line
             Serial.print("loaded in ");
             Serial.print(millis() - startTime);
             Serial.println(" ms");
         }
     }
     file.close();
-    if (!valid) {
+    if (!valid)
+    {
         Serial.println("bitmap format not handled.");
     }
 }
 
-
 void displayInit(void)
 {
     static bool isInit = false;
-    if (isInit) {
+    if (isInit)
+    {
         return;
     }
     isInit = true;
@@ -641,7 +700,8 @@ void displayInit(void)
     display.setFont(&DEFALUT_FONT);
     display.setTextSize(0);
 
-    if (SDCARD_SS >  0) {
+    if (SDCARD_SS > 0)
+    {
         display.fillScreen(GxEPD_WHITE);
 #if !(TTGO_T5_2_2)
         SPIClass sdSPI(VSPI);
@@ -652,7 +712,9 @@ void displayInit(void)
 #endif
         {
             displayText("SDCard MOUNT FAIL", 50, CENTER_ALIGNMENT);
-        } else {
+        }
+        else
+        {
             displayText("SDCard MOUNT PASS", 50, CENTER_ALIGNMENT);
             uint32_t cardSize = SD.cardSize() / (1024 * 1024);
             displayText("SDCard Size: " + String(cardSize) + "MB", 70, CENTER_ALIGNMENT);
@@ -662,10 +724,27 @@ void displayInit(void)
     }
 }
 
+bool setPowerBoostKeepOn(int en)
+{
+    Wire.beginTransmission(IP5306_ADDR);
+    Wire.write(IP5306_REG_SYS_CTL0);
+    if (en)
+        Wire.write(0x37); // Set bit1: 1 enable 0 disable boost keep on
+    else
+        Wire.write(0x35); // 0x37 is default reg value
+    return Wire.endTransmission() == 0;
+}
+
 void setup()
 {
     Serial.begin(115200);
     delay(500);
+
+#ifdef ENABLE_IP5306
+    Wire.begin(I2C_SDA, I2C_SCL);
+    bool ret = setPowerBoostKeepOn(1);
+    Serial.printf("Power KeepUp %s\n", ret ? "PASS" : "FAIL");
+#endif
 
 // It is only necessary to turn on the power amplifier power supply on the T5_V24 board.
 #ifdef AMP_POWER_CTRL
@@ -673,29 +752,62 @@ void setup()
     digitalWrite(AMP_POWER_CTRL, HIGH);
 #endif
 
-    if (SPEAKER_OUT > 0) {
+#ifdef DAC_MAX98357
+    AudioGeneratorMP3 *mp3;
+    AudioFileSourcePROGMEM *file;
+    AudioOutputI2S *out;
+    AudioFileSourceID3 *id3;
+
+    file = new AudioFileSourcePROGMEM(image, sizeof(image));
+    id3 = new AudioFileSourceID3(file);
+    out = new AudioOutputI2S();
+    out->SetPinout(IIS_BCK, IIS_WS, IIS_DOUT);
+    mp3 = new AudioGeneratorMP3();
+    mp3->begin(id3, out);
+    while (1)
+    {
+        if (mp3->isRunning())
+        {
+            if (!mp3->loop())
+                mp3->stop();
+        }
+        else
+        {
+            Serial.printf("MP3 done\n");
+            break;
+        }
+    }
+#endif
+
+    if (SPEAKER_OUT > 0)
+    {
         ledcSetup(CHANNEL_0, 1000, 8);
         ledcAttachPin(SPEAKER_OUT, CHANNEL_0);
         int i = 3;
-        while (i--) {
+        while (i--)
+        {
             ledcWriteTone(CHANNEL_0, 1000);
             delay(200);
             ledcWriteTone(CHANNEL_0, 0);
         }
     }
     SPI.begin(SPI_CLK, SPI_MISO, SPI_MOSI, -1);
-    if (!FILESYSTEM.begin()) {
+    if (!FILESYSTEM.begin())
+    {
         Serial.println("FILESYSTEM is not database");
         Serial.println("Please use Arduino ESP32 Sketch data Upload files");
-        while (1) {
+        while (1)
+        {
             delay(1000);
         }
     }
-    if (!loadBadgeInfo(&info)) {
+    if (!loadBadgeInfo(&info))
+    {
         loadDefaultInfo();
     }
 
-    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_UNDEFINED) {
+    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_UNDEFINED)
+    {
         showMianPage();
     }
 

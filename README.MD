@@ -4,33 +4,50 @@ TTGO Badge & TTGO EPaper Series
 ![](images/4.png)
 
 ## BOARD PINS
-| Name                | T5 V1.2 / V2.4 | T5 V2.0   | T5 V2.1   | T5 V2.2   | T5 V2.3   | T5 xxxx   |
-| ------------------- | ------------- | --------- | --------- | --------- | --------- | --------- |
-| EPaper BUSY         | 4             | 4         | 4         | 4         | 4         | 4         |
-| EPaper RST          | 16            | 16        | 16        | 12        | 16        | 12        |
-| EPaper DC           | 17            | 17        | 17        | 19        | 17        | 13        |
-| EPaper CS           | 5             | 5         | 5         | 5         | 5         | 2         |
-| EPaper MOSI         | 23            | 23        | 23        | 23        | 23        | 15        |
-| EPaper MISO         | N/A           | N/A       | N/A       | N/A       | N/A       | N/A       |
-| EPaper SCLK         | 18            | 18        | 18        | 18        | 18        | 14        |
-| SDCard CS           | 13            | 13        | 13        | 13        | 13        | N/A       |
-| SDCard MOSI         | 15            | 15        | 15        | 23        | 15        | N/A       |
-| SDCard MISO         | 2             | 2         | 2         | 2         | 2         | N/A       |
-| SDCard SCLK         | 14            | 14        | 14        | 18        | 14        | N/A       |
-| Button 1            | 37            | 39        | 37        | 37        | 39        | 37        |
-| Button 2            | 38            | N/A       | 38        | 38        | N/A       | 38        |
-| Button 3            | 39            | N/A       | 39        | 39        | N/A       | 39        |
-| DAC OUT             | 25            | N/A       | 25        | 25        | N/A       | N/A       |
-| DS3231 SDA          | N/A           | N/A       | N/A       | N/A       | N/A       | 21        |
-| DS3231 SCL          | N/A           | N/A       | N/A       | N/A       | N/A       | 22        |
-| LORA MOSI           | N/A           | N/A       | N/A       | N/A       | N/A       | 27        |
-| LORA MISO           | N/A           | N/A       | N/A       | N/A       | N/A       | 19        |
-| LORA SCLK           | N/A           | N/A       | N/A       | N/A       | N/A       | 5         |
-| LORA CS             | N/A           | N/A       | N/A       | N/A       | N/A       | 18        |
-| LORA RST            | N/A           | N/A       | N/A       | N/A       | N/A       | 23        |
-| LORA DIO0           | N/A           | N/A       | N/A       | N/A       | N/A       | 26        |
-| SPRAM               | N/A           | N/A       | N/A       | supported | N/A       | supported |
-| Support EPaper Size | Full Size     | Full Size | Full Size | Full Size | Full Size | Full Size |
+| Name                | T5 V1.2 / V2.4 | T5 V2.0   | T5 V2.1   | T5 V2.2   | T5 V2.3   | T5 V2.8   | T5 xxxx   |
+| ------------------- | -------------- | --------- | --------- | --------- | --------- | --------- | --------- |
+| EPaper BUSY         | 4              | 4         | 4         | 4         | 4         | 4         | 4         |
+| EPaper RST          | 16             | 16        | 16        | 12        | 16        | 16        | 12        |
+| EPaper DC           | 17             | 17        | 17        | 19        | 17        | 17        | 13        |
+| EPaper CS           | 5              | 5         | 5         | 5         | 5         | 5         | 2         |
+| EPaper MOSI         | 23             | 23        | 23        | 23        | 23        | 23        | 15        |
+| EPaper MISO         | N/A            | N/A       | N/A       | N/A       | N/A       | N/A       | N/A       |
+| EPaper SCLK         | 18             | 18        | 18        | 18        | 18        | 18        | 14        |
+| SDCard CS           | 13             | 13        | 13        | 13        | 13        | 13        | N/A       |
+| SDCard MOSI         | 15             | 15        | 15        | 23        | 15        | 15        | N/A       |
+| SDCard MISO         | 2              | 2         | 2         | 2         | 2         | 2         | N/A       |
+| SDCard SCLK         | 14             | 14        | 14        | 18        | 14        | 14        | N/A       |
+| Button 1            | 37             | 39        | 37        | 37        | 39        | 37        | 37        |
+| Button 2            | 38             | N/A       | 38        | 38        | N/A       | 38        | 38        |
+| Button 3            | 39             | N/A       | 39        | 39        | N/A       | 39        | 39        |
+| DAC OUT             | 25             | N/A       | 25        | 25        | N/A       | Note1     | N/A       |
+| DS3231 SDA          | N/A            | N/A       | N/A       | N/A       | N/A       | N/A       | 21        |
+| DS3231 SCL          | N/A            | N/A       | N/A       | N/A       | N/A       | N/A       | 22        |
+| LORA MOSI           | N/A            | N/A       | N/A       | N/A       | N/A       | N/A       | 27        |
+| LORA MISO           | N/A            | N/A       | N/A       | N/A       | N/A       | N/A       | 19        |
+| LORA SCLK           | N/A            | N/A       | N/A       | N/A       | N/A       | N/A       | 5         |
+| LORA CS             | N/A            | N/A       | N/A       | N/A       | N/A       | N/A       | 18        |
+| LORA RST            | N/A            | N/A       | N/A       | N/A       | N/A       | N/A       | 23        |
+| LORA DIO0           | N/A            | N/A       | N/A       | N/A       | N/A       | 2N/A      | 26        |
+| SPRAM               | N/A            | N/A       | N/A       | supported | N/A       | N/A       | supported |
+| Support EPaper Size | Full Size      | Full Size | Full Size | Full Size | Full Size | Full Size | Full Size |
+
+
+## Note1: 
+**Max98357**
+| Name | T5 V2.8 |
+| ---- | ------- |
+| BCK  | 26      |
+| WS   | 25      |
+| DOUT | 19      |
+
+**Mic**
+| Name | T5 V2.8 |
+| ---- | ------- |
+| BCK  | 26      |
+| WS   | 25      |
+| DIN  | 19      |
+
 
 
 ## Note
@@ -49,12 +66,13 @@ TTGO Badge & TTGO EPaper Series
 
 - For the first time, change the macro definition in `board_def.h` according to the corresponding layout and screen, and change the version to be used to 1.
 ```
-#define TTGO_T5_1_2 1
+#define TTGO_T5_1_2 0
 #define TTGO_T5_2_0 0
 #define TTGO_T5_2_1 0
 #define TTGO_T5_2_2 0
 #define TTGO_T5_2_3 0
 #define TTGO_T5_2_4 0
+#define TTGO_T5_2_8 0   
 ```
 
 - Check the screen size and color used. The default configuration screen list can be viewed in `board_def.h`. The default configuration is based on the size of the TTGO store. Except for the T5 V1.2 version, the T5 V1.2 needs to be configured according to the actual situation. The corresponding header file, 1.54 inches will not be fully displayed in this program
