@@ -69,7 +69,13 @@ TTGO Badge & TTGO EPaper Series
     ```
 
 - 2019/5/11 The T5_V2.4 version is the same as the T5_V1.2 version pin pin. Add `IO19` to the power amplifier power control. Control IO19 to high level to turn on the power amplifier power supply, low level is off.
-- 
+
+
+
+#### Update to PlatformIO, if you use Arduino, you need to do these
+- If you use Dowload ZIP to download and compile with Arduino IDE, please change src / main.cpp to a folder with the same name as your directory, otherwise you won't find the header files, such as using the downloaded folder named `TTGO-EPaper-Series-master`, then you need to change the name of main.cpp in src to TTGO-EPaper-Series.ino, and change the src directory to TTGO-EPaper-Series, and change the lib Move or copy the folders in the directory to your Arduino library directory.The default Arduino directory is `C:\Users\your username\Documents\Arduino\libraries`, and then put the data directory into` TTGO-EPaper-Series.ino` in the same directory for uploading resources
+
+
 ## First
 
 - For the first time, change the macro definition in `board_def.h` according to the corresponding layout and screen, and change the version to be used to 1.
