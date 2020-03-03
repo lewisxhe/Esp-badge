@@ -1,6 +1,8 @@
 TTGO Badge & TTGO EPaper Series
 ========================
 
+
+
 ![](images/4.png)
 
 ## BOARD PINS
@@ -31,6 +33,9 @@ TTGO Badge & TTGO EPaper Series
 | LORA DIO0           | N/A            | N/A       | N/A       | N/A       | N/A       | 2N/A      | 26        |
 | SPRAM               | N/A            | N/A       | N/A       | supported | N/A       | N/A       | supported |
 | Support EPaper Size | Full Size      | Full Size | Full Size | Full Size | Full Size | Full Size | Full Size |
+
+
+[中文描述点这里](doc/zh-cn.md)
 
 
 ## Note1: 
@@ -81,8 +86,8 @@ TTGO Badge & TTGO EPaper Series
 - Check the screen size and color used. The default configuration screen list can be viewed in `board_def.h`. The default configuration is based on the size of the TTGO store. Except for the T5 V1.2 version, the T5 V1.2 needs to be configured according to the actual situation. The corresponding header file, 1.54 inches will not be fully displayed in this program
 
 ## Install the following dependency library files:
-- [Button2](https://github.com/lewisxhe/Button2)
-- [GxEPD](https://github.com/lewisxhe/GxEPD)
+- [Button2](https://github.com/lewisxhe/Button2)<fork branch>
+- [GxEPD](https://github.com/lewisxhe/GxEPD)<fork branch>
 - [Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
 - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
 - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
