@@ -105,8 +105,12 @@ TTGO Badge & TTGO EPaper Series
 ## Upload webserver resource
 - Use Arduino ESP32 Sketch data Upload files,if you not install,[download ESP32FS-vX.zip](https://github.com/me-no-dev/arduino-esp32fs-plugin/releases),Extract to <C:\Users\Your User Name\Documents\Arduino\tools>,Open Ardunio IDE,  Tools -> ESP32 Sketch data Upload -> Upload
 
-## Configure Badge Website
+- With PlatformIO also you can upload files, with the next command:
+```bash
+pio run --target uploadfs
+```
 
+## Configure Badge Website
 - **Configure the badge by entering http://ttgo.local or ip address in your browser.**
 ![](images/3.png)
 
