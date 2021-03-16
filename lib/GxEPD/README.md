@@ -1,8 +1,11 @@
+=======
 # GxEPD
 A simple E-Paper display library with common base class and separate IO class for Arduino.
 
-## For SPI e-paper displays from Dalian Good Display 
-## and SPI e-paper boards from Waveshare
+- For SPI e-paper displays from Dalian Good Display 
+- and SPI e-paper boards from Waveshare
+
+- GxEPD2 is better suited for new users or new projects!
 
 ### important note :
 - these displays are for 3.3V supply and 3.3V data lines
@@ -10,6 +13,7 @@ A simple E-Paper display library with common base class and separate IO class fo
 - series resistor only is not enough for reliable operation (back-feed effect through protection diodes)
 - 4k7/10k resistor divider may not work with flat cable extensions or Waveshare 4.2 board, use level converter then
 - do not forget to connect GND
+- the actual Waveshare display boards now have level converters and series regulator, safe for 5V
 
 ### Paged Drawing, Picture Loop for AVR
 - This library uses paged drawing to cope with RAM restriction and missing single pixel update support
@@ -20,9 +24,11 @@ A simple E-Paper display library with common base class and separate IO class fo
 
 ### The E-Paper display base class is a subclass of Adafruit_GFX, to have graphics and text rendering.
 
-- It needs up to 30kB available RAM to buffer the black/white image for the SPI displays, double for 3-color.
-- ESP8266, ESP32 , STM32 systems,  Arduino Due e.g.  have enough free RAM for full graphics buffer.
-- Paged Drawing is available to cope with RAM restriction on AVR processors.
+- It needs up to 15kB available RAM to buffer the black/white image for the SPI displays, 
+- double for 3-color, for e-papers up to 4.2" (300 * 400 / 8, 2 * 300 * 400 / 8).
+- ESP8266, ESP32 , STM32 systems, Arduino Due e.g. have enough free RAM for full graphics buffer.
+- It needs more RAM for e-paper displays above the 4.2".
+- Paged Drawing is available to cope with RAM restriction on AVR processors or for big displays.
 
 ### Supporting Arduino Forum Topics:
 
@@ -30,24 +36,45 @@ A simple E-Paper display library with common base class and separate IO class fo
 - Good Dispay ePaper for Arduino : https://forum.arduino.cc/index.php?topic=436411.0
 
 ### Supported SPI e-paper panels from Good Display:
-- GxGDEW0102I4F     1.02" b/w       `only can be updated globally`
-- GDEP015OC1      1.54" b/w
-- GDEW0154Z04   1.54" b/w/r 200x200
-- GDEW0154Z17   1.54" b/w/r 152x152
-- GDE0213B1         2.13" b/w
-- GDEW0213I5F    2.13" b/w flexible
-- GDEW0213Z16   2.13" b/w/r
-- GxGDE0213B72  2.13" b/w
-- GDEH029A1        2.9" b/w
-- GDEW029T5       2.9" b/w
-- GDEW029Z10     2.9" b/w/r
-- GDEW027C44     2.7" b/w/r
-- GDEW027W3      2.7" b/w
-- GDEW042T2        4.2" b/w
-- GDEW042Z15      4.2" b/w/r
-- GDEW0583T7      5.83" b/w
-- GDEW075T8        7.5" b/w
-- GDEW075Z09      7.5" b/w/r
+- GxGDEW0102I4F     1.02"  b/w  `only can be updated globally`
+- GDEP015OC1        1.54"  b/w   200x200
+- GDEH0154D67       1.54"  b/w   200x200 replacement for GDEP015OC1
+- GDEW0154Z04       1.54"  b/w/r 200x200
+- GDEW0154Z17       1.54"  b/w/r 152x152
+- DEPG0150BN        1.54"  b/w   200x200
+- GDE0213B1         2.13"  b/w
+- GDEH0213B72       2.13"  b/w,  replacement for GDE0213B1
+- GDEH0213B73       2.13"  b/w,  new replacement for GDE0213B1, GDEH0213B72
+- GDEM0213B74       2.13"  b/w,  4-Color/Grayscale not achieved 
+- GDEW0213I5F       2.13"  b/w   flexible
+- GDEW0213Z16       2.13"  b/w/r
+- DEPG0213BN        2.13"  b/w
+- GDEH029A1         2.9"   b/w
+- GDEW029T5         2.9"   b/w
+- QYEG0290BN        2.9"   b/w
+- GDEW029Z10        2.9"   b/w/r
+- GDEW026T0         2.6"   b/w
+- GDEW027C44        2.7"   b/w/r
+- GDEW027W3         2.7"   b/w
+- GDEW0371W7        3.7"   b/w
+- GDEW042T2         4.2"   b/w
+- GDEW042Z15        4.2"   b/w/r
+- GDEW0583T7        5.83"  b/w
+- GDEW075T8         7.5"   b/w
+- GDEW075T7         7.5"   b/w    800x480
+- GDEW075Z09        7.5"   b/w/r
+- GDEW075Z08        7.5"   b/w/r  800x480
+
+### Supported SPI e-paper panels from DKE GROUP:
+- DEPG0150BN        1.54"  b/w    200x200
+- DEPG0266BN        2.66"  b/w    152x296
+- DEPG0213BN        2.13"  b/w    128x250
+- DEPG0290B         2.9"   b/w    128x296
+- DEPG0290R         2.9"   b/w/r  128x296
+- DEPG0750BN        7.5"   b/w    800x480
+
+
+
 #### Supported SPI e-paper panels & boards from Waveshare: compare with Good Display, same panel
 
 ### I can and will only support e-paper panels I have!
@@ -56,8 +83,34 @@ A simple E-Paper display library with common base class and separate IO class fo
 
 ### for pin mapping suggestions see ConnectingHardware.md
 
-
-### Version 3.0.5
+### Version 3.1.0
+- added support for GDEH0154D67 1.54" b/w, replacement for GDEP015OC1
+- added example GxEPD_MinimumExample, e.g. for memory footprint
+#### Version 3.0.9
+- fixed BMP handling, e.g. for BMPs created by ImageMagick
+- see also Arduino Forum Topic https://forum.arduino.cc/index.php?topic=642343.0
+- added support for GDEW075T7 7.5" b/w 800x480
+- GDEW075T7 has differential update (1.6s) using a charge balancing waveform
+- added "fast partial update" (differential update) for GDEW0371W7 3.7" b/w 240x416
+- improved differential update waveform for GDEW026T0 2.6" b/w 152x256
+- fixed init code & improved differential update for GDEW042T2 4.2" b/w 300x400
+- note that all differential refresh waveforms are a compromise (ghosting, big font use)
+- parameters for differential waveform for these display can easily be changed for experimenting
+- GDEW042T2 would have greyed background without sustain phase
+- GDEW042T2 needs multiple full refreshes after extended use of partial updates
+#### Version 3.0.8
+- added support for GDEH0213B73 2.13" b/w, replacement for GDE0213B1, GDEH0213B72
+- added support for GDEW026T0 2.6" b/w 152x256
+- added support for GDEW0371W7 3.7" b/w 240x416
+- added support for GDEW075Z08 7.5" b/w/r 800x480
+- changed 4.2" b/w waveform table, for better result with actual panels
+#### Version 3.0.7
+- fix for incomplete download in GxEPD_WiFi_Example
+- added missing powerDown() in base class GxEPD and class GxGDEW0154Z04
+- added missing getUTF8Width() for U8g2_for_Adafruit_GFX in GxFont_GFX
+#### Version 3.0.6
+- added GxGDEH0213B72, to support GDEH0213B72 2.13" b/w, replacement for GDE0213B1
+#### Version 3.0.5
 - added support for GDEW029T5
 - fixed wavetable for GDEW0213I5F
 #### Version 3.0.4
@@ -124,3 +177,4 @@ A simple E-Paper display library with common base class and separate IO class fo
 #### Version 2.3.5
 - GxFont_GFX : Font Rendering Graphics Switch and Bridge Class
 
+>>>>>>> github/master

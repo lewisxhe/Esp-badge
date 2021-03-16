@@ -268,6 +268,13 @@ void GxGDEW0102I4F::updateWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
     uint16_t xe_d8 = xe / 8;
     uint16_t ys_bx = GxGDEW0102I4F_HEIGHT - ye - 1;
     uint16_t ye_bx = GxGDEW0102I4F_HEIGHT - y - 1;
+
+    _Init_Part(0x01);
+    Serial.printf("0x10 y1:%d y2:%d x1:%d x2:%d\n", ys_bx, ye_bx, xs_d8, xe_d8);
+    _SetRamArea(xs_d8, xe_d8, ye % 256, ye / 256, y % 256, y / 256); // X-source area,Y-gate area
+
+
+#if 0
     _Init_Part(0x01);
     _SetRamArea(xs_d8, xe_d8, ye % 256, ye / 256, y % 256, y / 256); // X-source area,Y-gate area
     _SetRamPointer(xs_d8, ye % 256, ye / 256); // set ram
@@ -295,6 +302,7 @@ void GxGDEW0102I4F::updateWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
         }
     }
     delay(GxGDEW0102I4F_PU_DELAY);
+#endif
 }
 
 void GxGDEW0102I4F::_writeToWindow(uint16_t xs, uint16_t ys, uint16_t xd, uint16_t yd, uint16_t w, uint16_t h)
@@ -320,6 +328,15 @@ void GxGDEW0102I4F::_writeToWindow(uint16_t xs, uint16_t ys, uint16_t xd, uint16
     _SetRamArea(xds_d8, xde_d8, yde % 256, yde / 256, yd % 256, yd / 256); // X-source area,Y-gate area
     _SetRamPointer(xds_d8, yde % 256, yde / 256); // set ram
     _waitWhileBusy();
+    //writes Old data to SRAM for programming
+    _writeCommand(0x10);
+    for (int16_t y1 = ys; y1 <= yse; y1++) {
+        for (int16_t x1 = xs / 8; x1 <= xse_d8; x1++) {
+            uint16_t idx = y1 * (GxGDEW0102I4F_WIDTH / 8) + x1;
+            _writeData(0xFF);
+        }
+    }
+    //
     _writeCommand(0x13);
     for (int16_t y1 = ys; y1 <= yse; y1++) {
         for (int16_t x1 = xs / 8; x1 <= xse_d8; x1++) {
@@ -332,7 +349,7 @@ void GxGDEW0102I4F::_writeToWindow(uint16_t xs, uint16_t ys, uint16_t xd, uint16
 
 void GxGDEW0102I4F::updateToWindow(uint16_t xs, uint16_t ys, uint16_t xd, uint16_t yd, uint16_t w, uint16_t h, bool using_rotation)
 {
-    
+
     if (using_rotation) {
         switch (getRotation()) {
         case 1:
@@ -425,7 +442,7 @@ void GxGDEW0102I4F::_SetRamArea(uint8_t Xstart, uint8_t Xend, uint8_t Ystart, ui
     _writeData(Xend);
     _writeData(Ystart);
     _writeData(Yend);
-    _writeData(0);
+    _writeData(0x00);
 }
 
 void GxGDEW0102I4F::_SetRamPointer(uint8_t addrX, uint8_t addrY, uint8_t addrY1)
@@ -437,11 +454,9 @@ void GxGDEW0102I4F::_SetRamPointer(uint8_t addrX, uint8_t addrY, uint8_t addrY1)
     // _writeData(addrY1);
 }
 
-
-
 void GxGDEW0102I4F::_PowerOff(void)
 {
-    _writeCommand(0x02);
+    // _writeCommand(0x02);
     // _waitWhileBusy("_PowerOff");
 }
 
@@ -462,9 +477,9 @@ void GxGDEW0102I4F::_Init_Full(uint8_t em)
     _writeCommand(0xD2);
     _writeData(0x3F);
     _writeCommand(0x00);
-    _writeData (0x67);                  
+    _writeData (0x67);
 
-    _writeCommand(0x01);             
+    _writeCommand(0x01);
     _writeData (0x03);
     _writeData (0x00);
     _writeData (0x2b);
@@ -480,11 +495,11 @@ void GxGDEW0102I4F::_Init_Full(uint8_t em)
     _writeData(0x57);
     _writeCommand(0x60);
     _writeData(0x22);
-    _writeCommand(0x61);           
-    _writeData (0x50);              
+    _writeCommand(0x61);
+    _writeData (0x50);
     _writeData (0x80);
     _writeCommand(0x82);
-    _writeData(0x12); 
+    _writeData(0x12);
     _writeCommand(0xe3);
     _writeData(0x33);
 
@@ -499,9 +514,9 @@ void GxGDEW0102I4F::_Init_Part(uint8_t em)
     _writeData(0x3F);
 
     _writeCommand(0x00);
-    _writeData (0x67);  
+    _writeData (0x6F);
 
-    _writeCommand(0x01);             
+    _writeCommand(0x01);
     _writeData (0x03);
     _writeData (0x00);
     _writeData (0x2b);
@@ -530,6 +545,9 @@ void GxGDEW0102I4F::_Init_Part(uint8_t em)
     _writeData(0x33);
     _writeCommandData(LUTDefault_part_w, sizeof(LUTDefault_part_w));
     _writeCommandData(LUTDefault_part_b, sizeof(LUTDefault_part_b));
+
+    _writeCommand(0x04);
+    _waitWhileBusy("_Update_Full");
 }
 
 void GxGDEW0102I4F::_Update_Full(void)
@@ -544,12 +562,12 @@ void GxGDEW0102I4F::_Update_Full(void)
 
 void GxGDEW0102I4F::_Update_Part(void)
 {
-    _writeCommand(0x04);
-    _waitWhileBusy("_Update_Part");
+    // _writeCommand(0x04);
+    // _waitWhileBusy("_Update_Part");
     _writeCommand(0x12);
     _waitWhileBusy("_Update_Part");
-    _writeCommand(0x02);
-    _waitWhileBusy("_Update_Part");
+    // _writeCommand(0x02);
+    // _waitWhileBusy("_Update_Part");
 }
 
 void GxGDEW0102I4F::drawPaged(void (*drawCallback)(void))

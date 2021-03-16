@@ -1,7 +1,7 @@
 // GxEPD_WiFi_Example : Display Library example for SPI e-paper panels from Dalian Good Display and boards from Waveshare.
 // Requires HW SPI and Adafruit_GFX. Caution: these e-papers require 3.3V supply AND data lines!
 //
-// Display Library based on Demo Example from Good Display: http://www.good-display.com/download_list/downloadcategoryid=34&isMode=false.html
+// Display Library based on Demo Example from Good Display: http://www.e-paper-display.com/download_list/downloadcategoryid=34&isMode=false.html
 //
 // BMP handling code extracts taken from: https://github.com/prenticedavid/MCUFRIEND_kbv/tree/master/examples/showBMP_kbv_Uno
 //
@@ -35,25 +35,40 @@
 // BUSY -> 7, RST -> 9, DC -> 8, CS-> 10, CLK -> 13, DIN -> 11
 //
 
+// mapping suggestion for Arduino MEGA
+// BUSY -> 7, RST -> 9, DC -> 8, CS-> 53, CLK -> 52, DIN -> 51
+
+// mapping suggestion for Arduino DUE
+// BUSY -> 7, RST -> 9, DC -> 8, CS-> 77, CLK -> 76, DIN -> 75
+// SPI pins are also on 6 pin 2x3 SPI header
+
 // include library, include base class, make path known
 #include <GxEPD.h>
 
 // select the display class to use, only one
 //#include <GxGDEP015OC1/GxGDEP015OC1.h>    // 1.54" b/w
+//#include <GxGDEH0154D67/GxGDEH0154D67.h>  // 1.54" b/w
 //#include <GxGDEW0154Z04/GxGDEW0154Z04.h>  // 1.54" b/w/r 200x200
 //#include <GxGDEW0154Z17/GxGDEW0154Z17.h>  // 1.54" b/w/r 152x152
 //#include <GxGDEW0213I5F/GxGDEW0213I5F.h>  // 2.13" b/w 104x212 flexible
 //#include <GxGDE0213B1/GxGDE0213B1.h>      // 2.13" b/w
+//#include <GxGDEH0213B72/GxGDEH0213B72.h>  // 2.13" b/w new panel
+//#include <GxGDEH0213B73/GxGDEH0213B73.h>  // 2.13" b/w newer panel
 //#include <GxGDEW0213Z16/GxGDEW0213Z16.h>  // 2.13" b/w/r
 //#include <GxGDEH029A1/GxGDEH029A1.h>      // 2.9" b/w
+//#include <GxGDEW029T5/GxGDEW029T5.h>      // 2.9" b/w IL0373
 //#include <GxGDEW029Z10/GxGDEW029Z10.h>    // 2.9" b/w/r
+//#include <GxGDEW026T0/GxGDEW026T0.h>      // 2.6" b/w
 //#include <GxGDEW027C44/GxGDEW027C44.h>    // 2.7" b/w/r
 //#include <GxGDEW027W3/GxGDEW027W3.h>      // 2.7" b/w
+//#include <GxGDEW0371W7/GxGDEW0371W7.h>    // 3.7" b/w
 //#include <GxGDEW042T2/GxGDEW042T2.h>      // 4.2" b/w
 //#include <GxGDEW042Z15/GxGDEW042Z15.h>    // 4.2" b/w/r
 //#include <GxGDEW0583T7/GxGDEW0583T7.h>    // 5.83" b/w
 //#include <GxGDEW075T8/GxGDEW075T8.h>      // 7.5" b/w
+//#include <GxGDEW075T7/GxGDEW075T7.h>      // 7.5" b/w 800x480
 //#include <GxGDEW075Z09/GxGDEW075Z09.h>    // 7.5" b/w/r
+//#include <GxGDEW075Z08/GxGDEW075Z08.h>    // 7.5" b/w/r 800x480
 
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
 #include <GxIO/GxIO.h>
@@ -253,7 +268,7 @@ void drawBitmapFrom_HTTP_ToBuffer(const char* host, const char* path, const char
   Serial.println(String("http://") + host + path + filename);
   client.print(String("GET ") + path + filename + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
-               "User-Agent: GxEPD2_Spiffs_Loader\r\n" +
+               "User-Agent: GxEPD_WiFi_Example\r\n" +
                "Connection: close\r\n\r\n");
   Serial.println("request sent");
   while (client.connected())
@@ -318,7 +333,8 @@ void drawBitmapFrom_HTTP_ToBuffer(const char* host, const char* path, const char
       if (depth <= 8)
       {
         if (depth < 8) bitmask >>= depth;
-        bytes_read += skip(client, 54 - bytes_read); //palette is always @ 54
+        //bytes_read += skip(client, 54 - bytes_read); //palette is always @ 54
+        bytes_read += skip(client, imageOffset - (4 << depth) - bytes_read); // 54 for regular, diff for colorsimportant
         for (uint16_t pn = 0; pn < (1 << depth); pn++)
         {
           blue  = client.read();
@@ -342,7 +358,7 @@ void drawBitmapFrom_HTTP_ToBuffer(const char* host, const char* path, const char
       bytes_read += skip(client, rowPosition - bytes_read);
       for (uint16_t row = 0; row < h; row++, rowPosition += rowSize) // for each line
       {
-        if (!connection_ok || !client.connected()) break;
+        if (!connection_ok || !(client.connected() || client.available())) break;
         delay(1); // yield() to avoid WDT
         uint32_t in_remain = rowSize;
         uint32_t in_idx = 0;
@@ -353,7 +369,7 @@ void drawBitmapFrom_HTTP_ToBuffer(const char* host, const char* path, const char
         for (uint16_t col = 0; col < w; col++) // for each pixel
         {
           yield();
-          if (!connection_ok || !client.connected()) break;
+          if (!connection_ok || !(client.connected() || client.available())) break;
           // Time to read more pixel data?
           if (in_idx >= in_bytes) // ok, exact match for 24bit also (size IS multiple of 3)
           {
@@ -495,7 +511,7 @@ void drawBitmapFrom_HTTPS_ToBuffer(const char* host, const char* path, const cha
   Serial.println(String("https://") + host + path + filename);
   client.print(String("GET ") + path + filename + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
-               "User-Agent: GxEPD2_Spiffs_Loader\r\n" +
+               "User-Agent: GxEPD_WiFi_Example\r\n" +
                "Connection: close\r\n\r\n");
   Serial.println("request sent");
   while (client.connected())
@@ -560,7 +576,8 @@ void drawBitmapFrom_HTTPS_ToBuffer(const char* host, const char* path, const cha
       if (depth <= 8)
       {
         if (depth < 8) bitmask >>= depth;
-        bytes_read += skip(client, 54 - bytes_read); //palette is always @ 54
+        //bytes_read += skip(client, 54 - bytes_read); //palette is always @ 54
+        bytes_read += skip(client, imageOffset - (4 << depth) - bytes_read); // 54 for regular, diff for colorsimportant
         for (uint16_t pn = 0; pn < (1 << depth); pn++)
         {
           blue  = client.read();
@@ -584,7 +601,7 @@ void drawBitmapFrom_HTTPS_ToBuffer(const char* host, const char* path, const cha
       bytes_read += skip(client, rowPosition - bytes_read);
       for (uint16_t row = 0; row < h; row++, rowPosition += rowSize) // for each line
       {
-        if (!connection_ok || !client.connected()) break;
+        if (!connection_ok || !(client.connected() || client.available())) break;
         delay(1); // yield() to avoid WDT
         uint32_t in_remain = rowSize;
         uint32_t in_idx = 0;
@@ -595,7 +612,7 @@ void drawBitmapFrom_HTTPS_ToBuffer(const char* host, const char* path, const cha
         for (uint16_t col = 0; col < w; col++) // for each pixel
         {
           yield();
-          if (!connection_ok || !client.connected()) break;
+          if (!connection_ok || !(client.connected() || client.available())) break;
           // Time to read more pixel data?
           if (in_idx >= in_bytes) // ok, exact match for 24bit also (size IS multiple of 3)
           {
@@ -760,7 +777,7 @@ uint32_t skip(WiFiClient& client, int32_t bytes)
 {
   int32_t remain = bytes;
   uint32_t start = millis();
-  while (client.connected() && (remain > 0))
+  while ((client.connected() || client.available()) && (remain > 0))
   {
     if (client.available())
     {
@@ -777,7 +794,7 @@ uint32_t read(WiFiClient& client, uint8_t* buffer, int32_t bytes)
 {
   int32_t remain = bytes;
   uint32_t start = millis();
-  while (client.connected() && (remain > 0))
+  while ((client.connected() || client.available()) && (remain > 0))
   {
     if (client.available())
     {
