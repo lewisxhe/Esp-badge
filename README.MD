@@ -6,7 +6,7 @@
 
 # Use Arduino IDE
 1. Install the correct serial port driver [CP210X Driver](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers)
-2. For the first use, you need to select the model you are using at the top of `main.cpp`, and select the corresponding screen header file 
+2. For the first use, you need to select the model you are using at the top of `board_def.h`, and select the corresponding screen header file 
 3. Change `src/main.cpp` to `src.ino`
 4. Copy the files in the `lib` directory to `~/Arduino/libraries`,
 Windows users copy to `Documents/Arduino/libraries`
