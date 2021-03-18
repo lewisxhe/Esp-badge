@@ -17,7 +17,7 @@ Windows users copy to `Documents/Arduino/libraries`
 
 # Use PlatformIO
 1. Install the correct serial port driver [CP210X Driver](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers)
-2. For the first use, you need to select the model you are using at the top of `main.cpp`, and select the corresponding screen header file 
+2. For the first use, you need to select the model you are using at the top of `board_def.h`, and select the corresponding screen header file 
 3. Open directly to change your serial port in `platformio.ini`, click compile
 4. Terminal run `platformio.exe run --target uploadfs` to upload the FS file to ESP32 
 
