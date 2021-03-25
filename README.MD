@@ -12,7 +12,8 @@
 Windows users copy to `Documents/Arduino/libraries`
 4. Double-click to open `src/src.ino` 
 5. Change the port to the correct port and select upload
-6. Use `Arduino` ESP32 Sketch data Upload files,if you not install,[Download ESP32FS-vX.zip](https://github.com/me-no-dev/arduino-esp32fs-plugin/releases),Extract to <C:\Users\Your User Name\Documents\Arduino\tools>,Open `Ardunio IDE`,  `Tools -> ESP32 Sketch data Upload -> Upload`
+6. Put the data folder in the `src` directory 
+7. Use `Arduino` ESP32 Sketch data Upload files,if you not install,[Download ESP32FS-vX.zip](https://github.com/me-no-dev/arduino-esp32fs-plugin/releases),Extract to <C:\Users\Your User Name\Documents\Arduino\tools>,Open `Ardunio IDE`,  `Tools -> ESP32 Sketch data Upload -> Upload`
    
 
 # Use PlatformIO
